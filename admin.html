@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Dashboard — Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.admin{min-height:100vh;padding:calc(var(--nav-h) + 40px) 40px 60px}
+.admin-inner{max-width:1300px;margin:0 auto}
+.admin-header{margin-bottom:32px}
+.admin-header h1{font-size:1.8rem;font-weight:600;margin-bottom:8px}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.tab{padding:12px 24px;background:none;border:none;color:var(--muted2);font-size:.9rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{color:var(--blue2);border-bottom-color:var(--blue2)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.admin-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;backdrop-filter:blur(8px)}
+.agent-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:16px}
+.agent-name{font-weight:600;font-size:1.05rem}
+.agent-status{padding:4px 12px;border-radius:100px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+.agent-status.active{background:rgba(34,211,238,.15);color:var(--teal)}
+.agent-status.paused{background:rgba(255,174,0,.15);color:var(--amber)}
+.agent-type{font-size:.75rem;color:var(--muted);margin-bottom:12px}
+.agent-criteria{font-size:.85rem;color:var(--muted2);margin-bottom:16px;line-height:1.5}
+.agent-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.agent-stat{text-align:center;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:10px}
+.agent-stat-v{font-family:var(--ff-cond);font-size:1.4rem;font-weight:800;color:var(--blue2)}
+.agent-stat-l{font-size:.65rem;color:var(--muted);text-transform:uppercase}
+.agent-actions{display:flex;gap:8px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal.active{display:flex}
+.modal-content{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.modal-title{font-size:1.3rem;font-weight:600}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:0;width:32px;height:32px}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:.85rem;font-weight:600;margin-bottom:8px}
+.form-input,.form-select,.form-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:var(--ff-body);font-size:.9rem;outline:none}
+.form-textarea{min-height:80px;resize:vertical}
+.modal-actions{display:flex;gap:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="admin">
+<div class="aurora-blob" style="top:10%;right:10%;width:450px;height:450px"></div>
+<div class="admin-inner">
+<div class="admin-header reveal">
+<h1>Admin Dashboard</h1>
+<p style="color:var(--muted2)">Manage marketing agents, users, and analytics</p>
+</div>
+<div class="tabs reveal" data-testid="admin-tabs">
+<button class="tab active" onclick="switchTab('agents',event)">Marketing Agents</button>
+<button class="tab" onclick="switchTab('users',event)">Users</button>
+<button class="tab" onclick="switchTab('analytics',event)">Analytics</button>
+<button class="tab" onclick="switchTab('settings',event)">Settings</button>
+</div>
+<div id="agents-tab" class="tab-content active" data-testid="agents-content">
+<div class="admin-toolbar reveal">
+<div>
+<h2 style="font-size:1.2rem;font-weight:600;margin-bottom:4px">Marketing Agents</h2>
+<p style="font-size:.85rem;color:var(--muted2)">Automated outreach for sponsorships and growth</p>
+</div>
+<button class="btn-primary" onclick="openCreateModal()" data-testid="create-agent-btn">+ Create Agent</button>
+</div>
+<div class="agents-grid reveal reveal-d1" id="agents-grid" data-testid="agents-grid"></div>
+</div>
+<div id="users-tab" class="tab-content">
+<p style="color:var(--muted2)">Users management coming soon...</p>
+</div>
+<div id="analytics-tab" class="tab-content">
+<p style="color:var(--muted2)">Analytics dashboard coming soon...</p>
+</div>
+<div id="settings-tab" class="tab-content">
+<p style="color:var(--muted2)">Settings panel coming soon...</p>
+</div>
+</div>
+</div>
+<div id="create-modal" class="modal" data-testid="create-modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 class="modal-title">Create Marketing Agent</h3>
+<button class="modal-close" onclick="closeCreateModal()">×</button>
+</div>
+<form id="agent-form">
+<div class="form-group">
+<label class="form-label">Agent Name</label>
+<input type="text" class="form-input" id="agent-name" placeholder="e.g., Sponsorship Finder" required data-testid="agent-name-input">
+</div>
+<div class="form-group">
+<label class="form-label">Type</label>
+<select class="form-select" id="agent-type" required data-testid="agent-type-select">
+<option value="email">Email Outreach</option>
+<option value="social">Social Media Engagement</option>
+<option value="leadgen">Lead Generation</option>
+<option value="sponsor">Sponsorship Finder</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">Target Criteria</label>
+<textarea class="form-textarea" id="agent-criteria" placeholder="e.g., Tech YouTubers with 50k-200k subscribers" required data-testid="agent-criteria-input"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">Daily Limit</label>
+<input type="number" class="form-input" id="agent-limit" value="50" min="1" max="200" required data-testid="agent-limit-input">
+</div>
+<div class="modal-actions">
+<button type="button" class="btn-outline" onclick="closeCreateModal()">Cancel</button>
+<button type="submit" class="btn-primary" data-testid="modal-create-btn">Create Agent →</button>
+</div>
+</form>
+</div>
+</div>
+<script src="static/nav.js"></script>
+<script>
+const isArtifact=window.location.href.includes('claude.ai')||window.location.protocol==='data:';
+const user=JSON.parse(localStorage.getItem('kv_user')||'null');
+if(!isArtifact&&(!user||user.role!=='admin')){window.location.href='index.html'}
+let agents=JSON.parse(localStorage.getItem('kv_agents')||'[]');
+if(agents.length===0){agents=[{id:'a1',name:'Creator Outreach Bot',type:'email',status:'active',criteria:'YouTubers 10k-500k subs in tech',limit:50,sent:847,replies:68,converted:12},{id:'a2',name:'Brand Partnership Finder',type:'sponsor',status:'active',criteria:'Tech brands $1M+ revenue',limit:30,sent:342,replies:28,converted:5},{id:'a3',name:'Social Engagement Agent',type:'social',status:'paused',criteria:'Reddit r/youtube users',limit:100,sent:1240,replies:156,converted:22}];localStorage.setItem('kv_agents',JSON.stringify(agents))}
+function renderAgents(){const grid=document.getElementById('agents-grid');if(!grid)return;grid.innerHTML=agents.map(function(a){return '<div class="agent-card"><div class="agent-header"><div class="agent-name">'+a.name+'</div><span class="agent-status '+a.status+'">'+( a.status==='active'?'● Active':'⏸ Paused')+'</span></div><div class="agent-type">'+( a.type==='email'?'Email Outreach':a.type==='social'?'Social Media':a.type==='leadgen'?'Lead Generation':'Sponsorship Finder')+'</div><div class="agent-criteria">'+a.criteria+'</div><div class="agent-stats"><div class="agent-stat"><div class="agent-stat-v">'+a.sent+'</div><div class="agent-stat-l">Sent</div></div><div class="agent-stat"><div class="agent-stat-v">'+a.replies+'</div><div class="agent-stat-l">Replies</div></div><div class="agent-stat"><div class="agent-stat-v">'+a.converted+'</div><div class="agent-stat-l">Converted</div></div></div><div class="agent-actions"><button class="btn-sm" onclick="toggleAgent(\''+ a.id+'\')">'+( a.status==='active'?'Pause':'Resume')+'</button><button class="btn-sm btn-outline" onclick="deleteAgent(\''+ a.id+'\')">Delete</button></div></div>';}).join('')}
+function openCreateModal(){document.getElementById('create-modal').classList.add('active')}
+function closeCreateModal(){document.getElementById('create-modal').classList.remove('active');document.getElementById('agent-form').reset()}
+function handleCreateAgent(e){e.preventDefault();const agent={id:'a'+Date.now(),name:document.getElementById('agent-name').value,type:document.getElementById('agent-type').value,status:'active',criteria:document.getElementById('agent-criteria').value,limit:parseInt(document.getElementById('agent-limit').value),sent:0,replies:0,converted:0};agents.push(agent);localStorage.setItem('kv_agents',JSON.stringify(agents));renderAgents();closeCreateModal();if(window.kvToast)kvToast('Agent "'+agent.name+'" created!','success')}
+function toggleAgent(id){const agent=agents.find(function(a){return a.id===id});if(agent){agent.status=agent.status==='active'?'paused':'active';localStorage.setItem('kv_agents',JSON.stringify(agents));renderAgents();if(window.kvToast)kvToast('Agent '+(agent.status==='active'?'resumed':'paused'),'success')}}
+function deleteAgent(id){if(!confirm('Delete this agent?'))return;agents=agents.filter(function(a){return a.id!==id});localStorage.setItem('kv_agents',JSON.stringify(agents));renderAgents();if(window.kvToast)kvToast('Agent deleted','success')}
+function switchTab(tab,e){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active')});if(e&&e.target)e.target.classList.add('active');document.getElementById(tab+'-tab').classList.add('active')}
+document.getElementById('agent-form').addEventListener('submit',handleCreateAgent);
+document.addEventListener('DOMContentLoaded',function(){renderAgents()});
+</script>
+</body>
+</html>
