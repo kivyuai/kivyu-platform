@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Video Generation — Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.videogen-page{min-height:100vh;padding:calc(var(--nav-h) + 40px) 40px 60px;position:relative}
+.videogen-inner{max-width:1100px;margin:0 auto}
+.videogen-header{text-align:center;margin-bottom:48px}
+.videogen-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.videogen-form{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;backdrop-filter:blur(8px)}
+.form-group{margin-bottom:24px}
+.form-label{display:block;font-size:.85rem;font-weight:600;margin-bottom:8px;color:var(--text)}
+.form-textarea{width:100%;min-height:120px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:14px;color:var(--text);font-family:var(--ff-body);font-size:.9rem;resize:vertical;outline:none;transition:all .2s}
+.form-textarea:focus{border-color:var(--blue);background:rgba(255,255,255,.06)}
+.form-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:var(--ff-body);font-size:.9rem;outline:none;cursor:pointer}
+.models{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+.model-option{background:rgba(255,255,255,.02);border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s}
+.model-option:hover{border-color:var(--border2)}
+.model-option.selected{border-color:var(--blue);background:rgba(79,142,255,.08)}
+.model-name{font-weight:600;margin-bottom:4px}
+.model-desc{font-size:.75rem;color:var(--muted2)}
+.videogen-preview{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px;backdrop-filter:blur(8px)}
+.preview-placeholder{aspect-ratio:16/9;background:rgba(0,0,0,.3);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;margin-bottom:20px}
+.preview-video{width:100%;aspect-ratio:16/9;border-radius:12px;background:#000;margin-bottom:20px}
+.preview-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.preview-stat{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.preview-stat-l{font-size:.7rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.preview-stat-v{font-weight:600;color:var(--text)}
+.progress-bar{background:rgba(255,255,255,.05);border-radius:100px;height:8px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .3s;border-radius:100px}
+.progress-text{font-size:.8rem;color:var(--muted2);text-align:center}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="videogen-page" data-testid="videogen-page">
+<div class="aurora-blob" style="top:10%;right:10%;width:500px;height:500px"></div>
+<div class="aurora-blob" style="bottom:20%;left:15%;width:450px;height:450px;animation-duration:16s"></div>
+<div class="videogen-inner">
+<div class="videogen-header reveal">
+<span class="eyebrow">AI Video Studio</span>
+<h1 class="display-h">Generate videos with <em>cutting-edge AI.</em></h1>
+</div>
+<div class="videogen-grid">
+<div class="videogen-form reveal" data-testid="videogen-form">
+<form id="gen-form">
+<div class="form-group">
+<label class="form-label">Video Prompt</label>
+<textarea class="form-textarea" id="prompt" placeholder="A cinematic drone shot flying over a sunset beach, golden hour lighting, waves crashing gently on the shore, 4K ultra realistic" required data-testid="prompt-input"></textarea>
+</div>
+<div class="form-group">
+<label class="form-label">AI Model</label>
+<div class="models" data-testid="model-selector">
+<div class="model-option selected" onclick="selectModel('sora2')" data-model="sora2">
+<div class="model-name">Sora 2</div>
+<div class="model-desc">Best for realism</div>
+</div>
+<div class="model-option" onclick="selectModel('seedance')" data-model="seedance">
+<div class="model-name">Seedance 2.0</div>
+<div class="model-desc">Multi-modal</div>
+</div>
+<div class="model-option" onclick="selectModel('veo')" data-model="veo">
+<div class="model-name">Veo 3.1</div>
+<div class="model-desc">4K quality</div>
+</div>
+<div class="model-option" onclick="selectModel('hailuo')" data-model="hailuo">
+<div class="model-name">Hailuo 2.5</div>
+<div class="model-desc">Best motion</div>
+</div>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Duration</label>
+<select class="form-select" id="duration" data-testid="duration-select">
+<option value="3">3 seconds</option>
+<option value="5" selected>5 seconds</option>
+<option value="10">10 seconds</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">Resolution</label>
+<select class="form-select" id="resolution" data-testid="resolution-select">
+<option value="720p">720p (HD)</option>
+<option value="1080p" selected>1080p (Full HD)</option>
+<option value="4k">4K (Ultra HD)</option>
+</select>
+</div>
+<button type="submit" class="btn-primary" style="width:100%" id="gen-btn" data-testid="generate-btn">Generate Video →</button>
+</form>
+</div>
+<div class="videogen-preview reveal reveal-d1" data-testid="preview-area">
+<div id="preview-placeholder" class="preview-placeholder">
+Your video will appear here
+</div>
+<div id="preview-result" style="display:none">
+<video class="preview-video" controls>
+<source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+</video>
+<div class="preview-meta">
+<div class="preview-stat"><div class="preview-stat-l">Model</div><div class="preview-stat-v" id="result-model">Sora 2</div></div>
+<div class="preview-stat"><div class="preview-stat-l">Duration</div><div class="preview-stat-v" id="result-duration">5s</div></div>
+<div class="preview-stat"><div class="preview-stat-l">Resolution</div><div class="preview-stat-v" id="result-resolution">1080p</div></div>
+</div>
+<button class="btn-outline" style="width:100%" onclick="downloadVideo()">Download Video</button>
+</div>
+<div id="progress-area" style="display:none">
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="progress-text" id="progress-text">Initializing model...</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src="static/nav.js"></script>
+<script>
+let selectedModel='sora2';
+function selectModel(model){selectedModel=model;document.querySelectorAll('.model-option').forEach(el=>el.classList.remove('selected'));document.querySelector('[data-model="'+model+'"]').classList.add('selected')}
+function handleGenerate(e){e.preventDefault();const prompt=document.getElementById('prompt').value;const duration=document.getElementById('duration').value;const resolution=document.getElementById('resolution').value;document.getElementById('preview-placeholder').style.display='none';document.getElementById('preview-result').style.display='none';document.getElementById('progress-area').style.display='block';const btn=document.getElementById('gen-btn');btn.disabled=true;btn.textContent='Generating...';const stages=['Initializing model...','Loading '+selectedModel.toUpperCase()+'...','Processing prompt...','Generating frames...','Rendering video...','Finalizing...'];let stage=0;const interval=setInterval(()=>{if(stage>=stages.length){clearInterval(interval);showResult(duration,resolution);return}document.getElementById('progress-fill').style.width=((stage+1)/stages.length*100)+'%';document.getElementById('progress-text').textContent=stages[stage];stage++},1200)}
+function showResult(duration,resolution){document.getElementById('progress-area').style.display='none';document.getElementById('preview-result').style.display='block';document.getElementById('result-model').textContent=selectedModel.replace('sora2','Sora 2').replace('seedance','Seedance 2.0').replace('veo','Veo 3.1').replace('hailuo','Hailuo 2.5');document.getElementById('result-duration').textContent=duration+'s';document.getElementById('result-resolution').textContent=resolution;const btn=document.getElementById('gen-btn');btn.disabled=false;btn.textContent='Generate Video →';if(window.kvToast)kvToast('Video generated successfully! 🎉','success')}
+function downloadVideo(){if(window.kvToast)kvToast('Download started','success')}
+document.getElementById('gen-form').addEventListener('submit',handleGenerate)
+</script>
+</body>
+</html>
