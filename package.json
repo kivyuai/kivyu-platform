@@ -1,0 +1,12 @@
+{
+  "name": "kivyu-platform",
+  "version": "1.0.0",
+  "description": "AI-powered YouTube automation platform with 10 AI models",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["youtube", "ai", "automation", "video-generation", "marketing-agents"],
+  "author": "Kivyu",
+  "license": "MIT"
+}
