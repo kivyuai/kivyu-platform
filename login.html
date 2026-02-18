@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sign In — Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden}
+.login-bg{position:absolute;inset:0;z-index:0}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px;max-width:420px;width:100%;backdrop-filter:blur(12px);box-shadow:0 40px 100px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);position:relative;z-index:2}
+.login-logo{font-family:var(--ff-cond);font-size:1.8rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;background:linear-gradient(90deg,var(--blue2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;text-align:center}
+.login-subtitle{text-align:center;color:var(--muted2);margin-bottom:32px;font-size:.9rem}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:.85rem;font-weight:600;margin-bottom:8px;color:var(--text)}
+.form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:var(--ff-body);font-size:.9rem;outline:none;transition:all .2s}
+.form-input:focus{border-color:var(--blue);background:rgba(255,255,255,.06)}
+.login-footer{text-align:center;margin-top:24px;font-size:.85rem;color:var(--muted2)}
+.login-footer a{color:var(--blue2);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="login-page" data-testid="login-page">
+<div class="login-bg">
+<div class="aurora-blob" style="top:15%;right:10%;width:450px;height:450px"></div>
+<div class="aurora-blob" style="bottom:15%;left:10%;width:550px;height:550px;animation-duration:14s;animation-delay:-4s"></div>
+</div>
+<div class="login-card">
+<div class="login-logo">KIVYU</div>
+<p class="login-subtitle">Welcome back</p>
+<form id="login-form" data-testid="login-form">
+<div class="form-group">
+<label class="form-label" for="email">Email Address</label>
+<input type="email" id="email" class="form-input" placeholder="your@email.com" required data-testid="login-email">
+</div>
+<div class="form-group">
+<label class="form-label" for="password">Password</label>
+<input type="password" id="password" class="form-input" placeholder="Enter your password" required data-testid="login-password">
+</div>
+<button type="submit" class="btn-primary" style="width:100%" data-testid="login-submit">Sign In →</button>
+</form>
+<div class="login-footer">
+Don't have an account? <a href="register.html" data-testid="register-link">Sign up</a>
+</div>
+</div>
+</div>
+<script src="static/nav.js"></script>
+<script>
+function handleLogin(e){e.preventDefault();const email=document.getElementById('email').value;const password=document.getElementById('password').value;const isAdmin=email.toLowerCase().includes('admin');const user={email,name:email.split('@')[0],role:isAdmin?'admin':'user',loginAt:new Date().toISOString()};localStorage.setItem('kv_user',JSON.stringify(user));if(window.kvToast)kvToast('Welcome back, '+(isAdmin?'Admin':'User')+'!','success');setTimeout(()=>{window.location.href=isAdmin?'admin.html':'dashboard.html'},1000)}
+document.getElementById('login-form').addEventListener('submit',handleLogin)
+</script>
+</body>
+</html>
