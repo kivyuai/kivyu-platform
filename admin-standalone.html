@@ -247,11 +247,10 @@ if (agents.length === 0) {
 let _pendingDeleteId = null;
 
 function renderAgents() {
-  const grid = document.getElementById('agents-grid');
+  var grid = document.getElementById('agents-grid');
   if (!grid) return;
   grid.innerHTML = agents.map(function(a) {
-    var qid = JSON.stringify(a.id);
-    var qname = JSON.stringify(a.name);
+    var sq = "'";
     return '<div class="agent-card">' +
       '<div class="agent-header">' +
         '<div class="agent-name">' + a.name + '</div>' +
@@ -265,8 +264,8 @@ function renderAgents() {
         '<div class="agent-stat"><div class="agent-stat-v">' + a.converted + '</div><div class="agent-stat-l">Converted</div></div>' +
       '</div>' +
       '<div class="agent-actions">' +
-        '<button class="btn-sm" onclick="toggleAgent(' + qid + ')">' + (a.status === 'active' ? 'Pause' : 'Resume') + '</button>' +
-        '<button class="btn-sm btn-outline" onclick="openDeleteModal(' + qid + ',' + qname + ')">Delete</button>' +
+        '<button class="btn-sm" onclick="toggleAgent(' + sq + a.id + sq + ')">' + (a.status === 'active' ? 'Pause' : 'Resume') + '</button>' +
+        '<button class="btn-sm btn-outline" onclick="openDeleteModal(' + sq + a.id + sq + ',' + sq + a.name.replace(/'/g, "") + sq + ')">Delete</button>' +
       '</div>' +
     '</div>';
   }).join('');
