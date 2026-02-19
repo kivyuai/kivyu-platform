@@ -250,6 +250,8 @@ function renderAgents() {
   const grid = document.getElementById('agents-grid');
   if (!grid) return;
   grid.innerHTML = agents.map(function(a) {
+    var qid = JSON.stringify(a.id);
+    var qname = JSON.stringify(a.name);
     return '<div class="agent-card">' +
       '<div class="agent-header">' +
         '<div class="agent-name">' + a.name + '</div>' +
@@ -263,8 +265,8 @@ function renderAgents() {
         '<div class="agent-stat"><div class="agent-stat-v">' + a.converted + '</div><div class="agent-stat-l">Converted</div></div>' +
       '</div>' +
       '<div class="agent-actions">' +
-        '<button class="btn-sm" onclick="toggleAgent('' + a.id + '')">' + (a.status === 'active' ? 'Pause' : 'Resume') + '</button>' +
-        '<button class="btn-sm btn-outline" onclick="openDeleteModal('' + a.id + '', '' + a.name.replace(/'/g, "\'") + '')">Delete</button>' +
+        '<button class="btn-sm" onclick="toggleAgent(' + qid + ')">' + (a.status === 'active' ? 'Pause' : 'Resume') + '</button>' +
+        '<button class="btn-sm btn-outline" onclick="openDeleteModal(' + qid + ',' + qname + ')">Delete</button>' +
       '</div>' +
     '</div>';
   }).join('');
