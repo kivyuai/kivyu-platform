@@ -1,4 +1,21 @@
 {
-    "cleanUrls": false,
-    "trailingSlash": false
+  "version": 2,
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*).html",
+      "dest": "/$1.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1.html"
+    }
+  ]
 }
