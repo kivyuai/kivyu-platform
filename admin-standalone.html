@@ -325,10 +325,10 @@ function switchTab(tab, e) {
 }
 
 function notifyMe(btn) {
-  btn.textContent = '✔ You'll be notified!';
+  btn.textContent = "✔ Noted! We will notify you.";
   btn.classList.add('notified');
   btn.disabled = true;
-  if (window.kvToast) kvToast('You'll be notified when this feature launches!', 'success');
+  if (window.kvToast) kvToast("You will be notified when this feature launches!", 'success');
 }
 
 document.getElementById('agent-form').addEventListener('submit', handleCreateAgent);
