@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kivyu — AI-Powered YouTube Automation</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:calc(var(--nav-h) + 60px) 40px 80px;position:relative;overflow:hidden}
+.hero-inner{max-width:900px;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(79,142,255,.1);border:1px solid rgba(79,142,255,.2);border-radius:100px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue2);margin-bottom:28px}
+.hero-title{font-family:var(--ff-cond);font-size:clamp(3rem,8vw,6rem);font-weight:900;line-height:1;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:24px}
+.hero-title em{font-style:normal;background:linear-gradient(135deg,var(--blue2) 0%,var(--violet) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.15rem;color:var(--muted2);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:64px}
+.hero-stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap}
+.hero-stat-v{font-family:var(--ff-cond);font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--blue2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.hero-stat-l{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.features{padding:100px 40px;position:relative}
+.features-inner{max-width:1200px;margin:0 auto}
+.features-header{text-align:center;margin-bottom:64px}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;backdrop-filter:blur(8px);transition:all .3s}
+.feature-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.feature-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(79,142,255,.2),rgba(124,58,237,.2));border:1px solid rgba(79,142,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px}
+.feature-title{font-size:1.1rem;font-weight:600;margin-bottom:10px}
+.feature-desc{font-size:.875rem;color:var(--muted2);line-height:1.6}
+.models-section{padding:100px 40px;background:rgba(255,255,255,.01);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.models-inner{max-width:1100px;margin:0 auto;text-align:center}
+.models-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:48px}
+.model-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 16px;text-align:center;transition:all .2s}
+.model-card:hover{border-color:var(--blue2);background:rgba(79,142,255,.05)}
+.model-name{font-family:var(--ff-cond);font-size:1rem;font-weight:800;letter-spacing:.05em;margin-bottom:6px;color:var(--blue2)}
+.model-type{font-size:.7rem;color:var(--muted);text-transform:uppercase}
+.pricing{padding:100px 40px}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-header{text-align:center;margin-bottom:64px}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;transition:all .3s}
+.pricing-card.featured{border-color:var(--blue);background:rgba(79,142,255,.06);box-shadow:0 0 60px rgba(79,142,255,.15)}
+.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--blue),var(--violet));padding:4px 16px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pricing-name{font-size:1rem;font-weight:600;margin-bottom:8px}
+.pricing-price{font-family:var(--ff-cond);font-size:3rem;font-weight:900;margin-bottom:4px;background:linear-gradient(135deg,var(--blue2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pricing-period{font-size:.8rem;color:var(--muted);margin-bottom:24px}
+.pricing-features{list-style:none;margin-bottom:28px}
+.pricing-features li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--muted2)}
+.pricing-features li:last-child{border-bottom:none}
+.pricing-features li::before{content:'✓ ';color:var(--teal)}
+.cta-section{padding:100px 40px;text-align:center;position:relative;overflow:hidden}
+.cta-inner{max-width:700px;margin:0 auto;position:relative;z-index:2}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<section class="hero" data-testid="hero-section">
+<div class="aurora-blob" style="top:10%;left:5%;width:600px;height:600px"></div>
+<div class="aurora-blob" style="bottom:10%;right:5%;width:700px;height:700px;animation-duration:15s"></div>
+<div class="aurora-blob" style="top:40%;left:40%;width:400px;height:400px;animation-duration:20s"></div>
+<div class="hero-inner">
+<div class="hero-badge reveal">⚡ AI-Powered YouTube Automation</div>
+<h1 class="hero-title reveal reveal-d1">Automate Your<br><em>YouTube Empire</em><br>with AI</h1>
+<p class="hero-sub reveal reveal-d2">Generate videos, reply to comments, create Shorts, find sponsors — all powered by 10 cutting-edge AI models including Sora 2, Veo 3.1, and Seedance 2.0.</p>
+<div class="hero-actions reveal reveal-d3">
+<a href="register.html" class="btn-primary" style="font-size:1rem;padding:16px 32px" data-testid="hero-cta">Start for Free →</a>
+<a href="videogen.html" class="btn-outline" style="font-size:1rem;padding:16px 32px">Try Video Gen</a>
+</div>
+<div class="hero-stats reveal reveal-d4">
+<div><div class="hero-stat-v">10</div><div class="hero-stat-l">AI Models</div></div>
+<div><div class="hero-stat-v">500K+</div><div class="hero-stat-l">Videos Generated</div></div>
+<div><div class="hero-stat-v">2.4M+</div><div class="hero-stat-l">Comments Automated</div></div>
+<div><div class="hero-stat-v">98%</div><div class="hero-stat-l">Time Saved</div></div>
+</div>
+</div>
+</section>
+<section class="features" data-testid="features-section">
+<div class="aurora-blob" style="top:20%;right:10%;width:400px;height:400px"></div>
+<div class="features-inner">
+<div class="features-header reveal">
+<span class="eyebrow">Platform Features</span>
+<h2 class="display-h">Everything you need to<br><em>dominate YouTube</em></h2>
+</div>
+<div class="features-grid" data-testid="features-grid">
+<div class="feature-card reveal"><div class="feature-icon">🎥</div><div class="feature-title">AI Video Generation</div><div class="feature-desc">Generate studio-quality videos with Sora 2, Veo 3.1, Seedance 2.0, and Hailuo 2.5. 4K resolution, cinematic quality.</div></div>
+<div class="feature-card reveal reveal-d1"><div class="feature-icon">💬</div><div class="feature-title">Comment AI Agent</div><div class="feature-desc">Automatically reply to every comment with context-aware, personalized responses that boost engagement 340%.</div></div>
+<div class="feature-card reveal reveal-d2"><div class="feature-icon">⚡</div><div class="feature-title">Shorts Factory</div><div class="feature-desc">Transform long videos into viral Shorts automatically. AI identifies best moments and adds captions.</div></div>
+<div class="feature-card reveal"><div class="feature-icon">💰</div><div class="feature-title">Sponsorship AI</div><div class="feature-desc">Marketing agents find and contact brands automatically. Get sponsorship deals on autopilot.</div></div>
+<div class="feature-card reveal reveal-d1"><div class="feature-icon">🌍</div><div class="feature-title">Multi-Language Dubbing</div><div class="feature-desc">Clone your voice and dub videos in 40+ languages. Reach global audiences automatically.</div></div>
+<div class="feature-card reveal reveal-d2"><div class="feature-icon">📊</div><div class="feature-title">Analytics & Growth</div><div class="feature-desc">AI-powered analytics predict viral content, optimize upload times, and identify growth opportunities.</div></div>
+</div>
+</div>
+</section>
+<section class="models-section" data-testid="models-section">
+<div class="models-inner">
+<span class="eyebrow reveal">Powered By</span>
+<h2 class="display-h reveal reveal-d1">10 State-of-the-Art<br><em>AI Models</em></h2>
+<div class="models-grid reveal reveal-d2" data-testid="models-grid">
+<div class="model-card"><div class="model-name">Sora 2</div><div class="model-type">Video Gen</div></div>
+<div class="model-card"><div class="model-name">Veo 3.1</div><div class="model-type">4K Video</div></div>
+<div class="model-card"><div class="model-name">Seedance 2.0</div><div class="model-type">Multi-Modal</div></div>
+<div class="model-card"><div class="model-name">Hailuo 2.5</div><div class="model-type">Motion AI</div></div>
+<div class="model-card"><div class="model-name">Wan 2.2</div><div class="model-type">Animation</div></div>
+<div class="model-card"><div class="model-name">GPT-4o</div><div class="model-type">Text & Chat</div></div>
+<div class="model-card"><div class="model-name">Claude 3.7</div><div class="model-type">Analysis</div></div>
+<div class="model-card"><div class="model-name">Gemini 2.5</div><div class="model-type">Multimodal</div></div>
+<div class="model-card"><div class="model-name">ElevenLabs</div><div class="model-type">Voice Clone</div></div>
+<div class="model-card"><div class="model-name">Flux Pro</div><div class="model-type">Thumbnails</div></div>
+</div>
+</div>
+</section>
+<section class="pricing" data-testid="pricing-section">
+<div class="pricing-inner">
+<div class="pricing-header reveal">
+<span class="eyebrow">Pricing</span>
+<h2 class="display-h">Simple, <em>Transparent</em> Pricing</h2>
+</div>
+<div class="pricing-grid reveal reveal-d1" data-testid="pricing-grid">
+<div class="pricing-card">
+<div class="pricing-name">Free</div><div class="pricing-price">£0</div><div class="pricing-period">Forever free</div>
+<ul class="pricing-features"><li>3 Shorts/month</li><li>50 AI replies</li><li>720p resolution</li><li>1 channel</li></ul>
+<a href="register.html" class="btn-outline" style="width:100%;text-align:center">Get Started</a>
+</div>
+<div class="pricing-card featured">
+<div class="pricing-badge">Most Popular</div>
+<div class="pricing-name">Creator</div><div class="pricing-price">£19</div><div class="pricing-period">per month</div>
+<ul class="pricing-features"><li>40 Shorts/month</li><li>600 AI replies</li><li>1080p resolution</li><li>3 channels</li></ul>
+<a href="register.html" class="btn-primary" style="width:100%;text-align:center">Start Free Trial</a>
+</div>
+<div class="pricing-card">
+<div class="pricing-name">Pro</div><div class="pricing-price">£59</div><div class="pricing-period">per month</div>
+<ul class="pricing-features"><li>Unlimited Shorts</li><li>Unlimited replies</li><li>4K resolution</li><li>10 channels</li></ul>
+<a href="register.html" class="btn-outline" style="width:100%;text-align:center">Get Pro</a>
+</div>
+<div class="pricing-card">
+<div class="pricing-name">Agency</div><div class="pricing-price">£149</div><div class="pricing-period">per month</div>
+<ul class="pricing-features"><li>50+ channels</li><li>White-label</li><li>API access</li><li>Dedicated support</li></ul>
+<a href="register.html" class="btn-outline" style="width:100%;text-align:center">Contact Sales</a>
+</div>
+</div>
+</div>
+</section>
+<section class="cta-section">
+<div class="aurora-blob" style="top:0;left:50%;transform:translateX(-50%);width:600px;height:400px"></div>
+<div class="cta-inner">
+<span class="eyebrow reveal">Get Started Today</span>
+<h2 class="display-h reveal reveal-d1">Ready to <em>Automate</em><br>Your Channel?</h2>
+<p class="section-sub reveal reveal-d2">Join thousands of creators using Kivyu to grow their channels on autopilot.</p>
+<div class="reveal reveal-d3"><a href="register.html" class="btn-primary" style="font-size:1.05rem;padding:18px 40px">Create Free Account →</a></div>
+</div>
+</section>
+<script src="static/nav.js"></script>
+</body>
+</html>
