@@ -413,24 +413,24 @@ function generateYouTubeData() {
   var idea = document.getElementById('video-idea').value || 'YouTube video';
   var words = idea.split(' ').slice(0, 5).join(' ');
   var titleTpl = ytTitleTemplates[Math.floor(Math.random() * ytTitleTemplates.length)];
-  document.getElementById('yt-title').value = titleTpl.replace('[TITLE]', words).replace('[TOPIC]', words);
+  document.getElementById('yt-title').value = titleTpl.replace(/\[TITLE\]/g, words).replace(/\[TOPIC\]/g, words);
+  var nl = String.fromCharCode(10);
   document.getElementById('yt-description').value = [
-    words + ' — Full Video',
+    words + ' - Full Video',
     '',
     'In this video I cover everything you need to know about ' + idea.toLowerCase() + '.',
     '',
-    '&#9201; TIMESTAMPS',
+    'TIMESTAMPS',
     '0:00 - Introduction',
     '1:00 - Main Content',
     '4:00 - Key Takeaways',
     '5:00 - Outro',
     '',
-    '&#128276; Subscribe for more content!',
-    '&#128279; Links mentioned in video: [add your links]',
+    'Subscribe for more content!',
+    'Links mentioned in video: [add your links]',
     '',
     '#youtube #' + channelId + ' #' + words.replace(/ /g, '')
-  ].join('
-');
+  ].join(nl);
   var baseTags = [channelId, 'youtube', '2025', words, words.split(' ')[0], 'howto', 'tutorial', 'review', 'tips', 'viral'];
   generatedTags = baseTags.filter(function(t) { return t.length > 1; });
   renderTags();
