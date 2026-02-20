@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Settings - Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.settings-page{min-height:100vh;padding:calc(var(--nav-h) + 36px) 40px 80px}
+.settings-inner{max-width:780px;margin:0 auto}
+.settings-header{margin-bottom:32px}
+.settings-header h1{font-size:1.8rem;font-weight:600;margin-bottom:6px}
+.settings-header p{color:var(--muted2);font-size:.9rem}
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;backdrop-filter:blur(8px)}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.section-icon.gen{background:rgba(99,102,241,.15)}
+.section-icon.social{background:rgba(16,185,129,.12)}
+.section-icon.app{background:rgba(245,158,11,.1)}
+.section-title{font-size:1.05rem;font-weight:600}
+.section-subtitle{font-size:.8rem;color:var(--muted2);margin-top:2px}
+.api-field{margin-bottom:18px}
+.api-field-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.api-label{font-size:.78rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.api-label span{font-size:.68rem;padding:2px 8px;border-radius:4px}
+.badge-free{background:rgba(16,185,129,.15);color:#10b981}
+.badge-optional{background:rgba(99,102,241,.12);color:var(--blue2)}
+.badge-required{background:rgba(245,158,11,.12);color:#f59e0b}
+.api-status{font-size:.72rem;font-weight:600}
+.api-status.ok{color:#10b981}
+.api-status.missing{color:var(--muted)}
+.api-input-wrap{position:relative;display:flex;gap:8px}
+.api-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:10px 14px;font-size:.88rem;font-family:var(--ff-body);outline:none;transition:.2s}
+.api-input:focus{border-color:var(--blue2)}
+.api-input.has-value{border-color:rgba(16,185,129,.4)}
+.btn-toggle-vis{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:7px;color:var(--muted);padding:0 12px;cursor:pointer;font-size:.85rem;transition:.2s}
+.btn-toggle-vis:hover{border-color:var(--blue2);color:var(--blue2)}
+.api-hint{font-size:.72rem;color:var(--muted);margin-top:6px}
+.api-hint a{color:var(--blue2)}
+.btn-save-section{margin-top:8px;padding:10px 24px;background:linear-gradient(135deg,var(--blue2),var(--violet));border:none;border-radius:9px;color:#fff;font-weight:600;font-size:.88rem;cursor:pointer;transition:.2s}
+.btn-save-section:hover{opacity:.85}
+.social-connection{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.social-connection:last-child{border-bottom:none}
+.social-left{display:flex;align-items:center;gap:12px}
+.social-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.social-name{font-size:.92rem;font-weight:600}
+.social-hint{font-size:.75rem;color:var(--muted2);margin-top:2px}
+.btn-connect{padding:8px 18px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;border:none}
+.btn-connect.disconnected{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:var(--blue2)}
+.btn-connect.disconnected:hover{background:rgba(99,102,241,.3)}
+.btn-connect.connected{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#10b981}
+.conn-status{font-size:.72rem;font-weight:600}
+.conn-status.ok{color:#10b981}
+.conn-status.no{color:var(--muted)}
+.app-setting-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+.app-setting-row:last-child{border-bottom:none}
+.app-setting-label{font-size:.9rem;font-weight:500}
+.app-setting-sub{font-size:.76rem;color:var(--muted2);margin-top:2px}
+.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:100px;transition:.3s}
+.toggle-slider:before{content:"";position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:var(--muted);border-radius:50%;transition:.3s}
+.toggle-switch input:checked + .toggle-slider{background:linear-gradient(135deg,var(--blue2),var(--violet));border-color:transparent}
+.toggle-switch input:checked + .toggle-slider:before{transform:translateX(20px);background:#fff}
+.save-all-bar{position:sticky;bottom:24px;display:flex;justify-content:flex-end;padding:16px 0;pointer-events:none}
+.save-all-btn{padding:13px 32px;background:linear-gradient(135deg,var(--blue2),var(--violet));border:none;border-radius:11px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 8px 32px rgba(99,102,241,.4);transition:.2s;pointer-events:all}
+.save-all-btn:hover{opacity:.88;transform:translateY(-1px)}
+.danger-zone{margin-top:8px;padding:18px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:12px}
+.danger-zone h4{color:#ef4444;font-size:.9rem;font-weight:600;margin-bottom:10px}
+.btn-danger{padding:9px 20px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:8px;color:#ef4444;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s}
+.btn-danger:hover{background:rgba(239,68,68,.25)}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="settings-page">
+<div class="aurora-blob" style="top:0;right:0;width:500px;height:500px;opacity:.35"></div>
+<div class="settings-inner">
+
+<div class="settings-header reveal">
+<h1>Platform Settings</h1>
+<p>Configure API keys, social accounts, and platform preferences</p>
+</div>
+
+<!-- Video Generation APIs -->
+<div class="settings-section reveal reveal-d1">
+<div class="section-header">
+<div class="section-icon gen">&#128640;</div>
+<div><div class="section-title">Video Generation APIs</div><div class="section-subtitle">Connect AI video generation services</div></div>
+</div>
+
+<div class="api-field">
+<div class="api-field-header">
+<div class="api-label">Replicate API Token <span class="badge-required">Required</span></div>
+<div class="api-status" id="st-replicate"></div>
+</div>
+<div class="api-input-wrap">
+<input class="api-input" type="password" id="key-replicate" placeholder="r8_xxxxxxxxxxxxxxxxxxxxxxxx" oninput="updateStatus('replicate',this.value)" />
+<button class="btn-toggle-vis" onclick="toggleVis('key-replicate',this)">&#128065;</button>
+</div>
+<div class="api-hint">Powers real video generation. Get yours free at <a href="https://replicate.com" target="_blank">replicate.com</a> (free tier available)</div>
+</div>
+
+<div class="api-field">
+<div class="api-field-header">
+<div class="api-label">Runway API Key <span class="badge-optional">Optional</span></div>
+<div class="api-status" id="st-runway"></div>
+</div>
+<div class="api-input-wrap">
+<input class="api-input" type="password" id="key-runway" placeholder="rw_xxxxxxxxxxxxxxxxxxxxxxxx" oninput="updateStatus('runway',this.value)" />
+<button class="btn-toggle-vis" onclick="toggleVis('key-runway',this)">&#128065;</button>
+</div>
+<div class="api-hint">Runway Gen-3 Alpha. Get at <a href="https://runwayml.com" target="_blank">runwayml.com</a></div>
+</div>
+
+<div class="api-field">
+<div class="api-field-header">
+<div class="api-label">Pika API Key <span class="badge-optional">Optional</span></div>
+<div class="api-status" id="st-pika"></div>
+</div>
+<div class="api-input-wrap">
+<input class="api-input" type="password" id="key-pika" placeholder="pk_xxxxxxxxxxxxxxxxxxxxxxxx" oninput="updateStatus('pika',this.value)" />
+<button class="btn-toggle-vis" onclick="toggleVis('key-pika',this)">&#128065;</button>
+</div>
+<div class="api-hint">Pika 2.0 video generation. Get at <a href="https://pika.art" target="_blank">pika.art</a></div>
+</div>
+
+<button class="btn-save-section" onclick="saveGenKeys()">Save Generation Keys</button>
+</div>
+
+<!-- Social Media APIs -->
+<div class="settings-section reveal reveal-d2">
+<div class="section-header">
+<div class="section-icon social">&#128228;</div>
+<div><div class="section-title">Social Media Connections</div><div class="section-subtitle">Connect your platform accounts for auto-upload</div></div>
+</div>
+
+<div class="social-connection">
+<div class="social-left">
+<div class="social-icon" style="background:rgba(255,0,0,.12)">&#128250;</div>
+<div><div class="social-name">YouTube</div><div class="social-hint">YouTube Data API v3 &bull; Needs OAuth app</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div class="conn-status no" id="yt-status">Not connected</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input class="api-input" type="password" id="key-youtube" placeholder="YouTube API Key" style="width:180px;padding:7px 12px;font-size:.78rem" oninput="updateSocialStatus('youtube',this.value)" />
+<button class="btn-connect disconnected" id="btn-yt" onclick="saveSocialKey('youtube')">Save Key</button>
+</div>
+</div>
+</div>
+
+<div class="social-connection">
+<div class="social-left">
+<div class="social-icon" style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08)">&#127982;</div>
+<div><div class="social-name">TikTok</div><div class="social-hint">TikTok Content Posting API</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div class="conn-status no" id="tt-status">Not connected</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input class="api-input" type="password" id="key-tiktok" placeholder="TikTok Access Token" style="width:180px;padding:7px 12px;font-size:.78rem" oninput="updateSocialStatus('tiktok',this.value)" />
+<button class="btn-connect disconnected" id="btn-tt" onclick="saveSocialKey('tiktok')">Save Key</button>
+</div>
+</div>
+</div>
+
+<div class="social-connection">
+<div class="social-left">
+<div class="social-icon" style="background:rgba(225,48,108,.12)">&#128247;</div>
+<div><div class="social-name">Instagram</div><div class="social-hint">Instagram Graph API &bull; Requires Business account</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div class="conn-status no" id="ig-status">Not connected</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input class="api-input" type="password" id="key-instagram" placeholder="Instagram Access Token" style="width:180px;padding:7px 12px;font-size:.78rem" oninput="updateSocialStatus('instagram',this.value)" />
+<button class="btn-connect disconnected" id="btn-ig" onclick="saveSocialKey('instagram')">Save Key</button>
+</div>
+</div>
+</div>
+
+<div class="social-connection">
+<div class="social-left">
+<div class="social-icon" style="background:rgba(24,119,242,.12)">&#128153;</div>
+<div><div class="social-name">Facebook</div><div class="social-hint">Meta Graph API</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div class="conn-status no" id="fb-status">Not connected</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input class="api-input" type="password" id="key-facebook" placeholder="Facebook Page Token" style="width:180px;padding:7px 12px;font-size:.78rem" oninput="updateSocialStatus('facebook',this.value)" />
+<button class="btn-connect disconnected" id="btn-fb" onclick="saveSocialKey('facebook')">Save Key</button>
+</div>
+</div>
+</div>
+
+<div class="social-connection">
+<div class="social-left">
+<div class="social-icon" style="background:rgba(29,161,242,.12)">&#128038;</div>
+<div><div class="social-name">Twitter / X</div><div class="social-hint">Twitter API v2 &bull; Bearer token</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div class="conn-status no" id="tw-status">Not connected</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<input class="api-input" type="password" id="key-twitter" placeholder="Twitter Bearer Token" style="width:180px;padding:7px 12px;font-size:.78rem" oninput="updateSocialStatus('twitter',this.value)" />
+<button class="btn-connect disconnected" id="btn-tw" onclick="saveSocialKey('twitter')">Save Key</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- App Settings -->
+<div class="settings-section reveal reveal-d3">
+<div class="section-header">
+<div class="section-icon app">&#9881;&#65039;</div>
+<div><div class="section-title">App Preferences</div><div class="section-subtitle">Customise platform behaviour</div></div>
+</div>
+<div class="app-setting-row">
+<div><div class="app-setting-label">Auto-save to Library</div><div class="app-setting-sub">Automatically save generated videos to your library</div></div>
+<label class="toggle-switch"><input type="checkbox" id="pref-autosave" checked /><span class="toggle-slider"></span></label>
+</div>
+<div class="app-setting-row">
+<div><div class="app-setting-label">Auto 4K Upscale</div><div class="app-setting-sub">Always upscale generated videos to 4K when possible</div></div>
+<label class="toggle-switch"><input type="checkbox" id="pref-auto4k" checked /><span class="toggle-slider"></span></label>
+</div>
+<div class="app-setting-row">
+<div><div class="app-setting-label">Default Public Upload</div><div class="app-setting-sub">Set uploaded videos as Public by default</div></div>
+<label class="toggle-switch"><input type="checkbox" id="pref-public" /></label>
+</div>
+<div class="app-setting-row">
+<div><div class="app-setting-label">Email Notifications</div><div class="app-setting-sub">Get notified when generation or uploads complete</div></div>
+<label class="toggle-switch"><input type="checkbox" id="pref-notif" /></label>
+</div>
+<button class="btn-save-section" style="margin-top:16px" onclick="savePrefs()">Save Preferences</button>
+</div>
+
+<!-- Danger Zone -->
+<div class="settings-section reveal reveal-d4">
+<div class="section-header">
+<div class="section-icon" style="background:rgba(239,68,68,.12)">&#9888;&#65039;</div>
+<div><div class="section-title">Data Management</div><div class="section-subtitle">Manage your stored data</div></div>
+</div>
+<div class="danger-zone">
+<h4>&#9888; Danger Zone</h4>
+<p style="font-size:.82rem;color:var(--muted2);margin-bottom:12px">These actions cannot be undone. Proceed with caution.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="btn-danger" onclick="clearVideos()">Clear Video Library</button>
+<button class="btn-danger" onclick="clearNiches()">Reset All Niches</button>
+<button class="btn-danger" onclick="clearAll()">Clear All Data</button>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script src="static/nav.js"></script>
+<script>
+var GEN_KEYS = ['replicate','runway','pika'];
+var SOCIAL_KEYS = ['youtube','tiktok','instagram','facebook','twitter'];
+var SOCIAL_STATUS_IDS = { youtube:'yt-status', tiktok:'tt-status', instagram:'ig-status', facebook:'fb-status', twitter:'tw-status' };
+
+function getKey(k) { return localStorage.getItem('kv_' + k + '_key') || ''; }
+function setKey(k,v) { localStorage.setItem('kv_' + k + '_key', v); }
+
+function init() {
+  GEN_KEYS.forEach(function(k) {
+    var val = getKey(k);
+    var el = document.getElementById('key-' + k);
+    if (el && val) { el.value = val; el.classList.add('has-value'); }
+    updateStatus(k, val);
+  });
+  SOCIAL_KEYS.forEach(function(k) {
+    var val = getKey(k);
+    var el = document.getElementById('key-' + k);
+    if (el && val) { el.value = val; el.classList.add('has-value'); }
+    updateSocialStatus(k, val);
+  });
+  var prefs = {};
+  try { prefs = JSON.parse(localStorage.getItem('kv_prefs') || '{}'); } catch(e) {}
+  if (prefs.autosave !== undefined) document.getElementById('pref-autosave').checked = prefs.autosave;
+  if (prefs.auto4k !== undefined) document.getElementById('pref-auto4k').checked = prefs.auto4k;
+  if (prefs.public !== undefined) document.getElementById('pref-public').checked = prefs.public;
+  if (prefs.notif !== undefined) document.getElementById('pref-notif').checked = prefs.notif;
+}
+
+function updateStatus(key, val) {
+  var el = document.getElementById('st-' + key);
+  if (!el) return;
+  if (val && val.length > 4) {
+    el.textContent = 'Connected';
+    el.className = 'api-status ok';
+  } else {
+    el.textContent = 'Not set';
+    el.className = 'api-status missing';
+  }
+}
+
+function updateSocialStatus(platform, val) {
+  var id = SOCIAL_STATUS_IDS[platform];
+  var el = id ? document.getElementById(id) : null;
+  if (!el) return;
+  if (val && val.length > 4) {
+    el.textContent = 'Key saved';
+    el.className = 'conn-status ok';
+    var btnId = 'btn-' + platform.slice(0,2);
+    var btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = 'Update Key'; btn.className = 'btn-connect connected'; }
+  } else {
+    el.textContent = 'Not connected';
+    el.className = 'conn-status no';
+  }
+}
+
+function toggleVis(inputId, btn) {
+  var el = document.getElementById(inputId);
+  if (!el) return;
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = '&#128247;'; }
+  else { el.type = 'password'; btn.textContent = '&#128065;'; }
+}
+
+function saveGenKeys() {
+  GEN_KEYS.forEach(function(k) {
+    var el = document.getElementById('key-' + k);
+    if (el) {
+      var val = el.value.trim();
+      setKey(k, val);
+      if (val) el.classList.add('has-value'); else el.classList.remove('has-value');
+      updateStatus(k, val);
+    }
+  });
+  if (window.kvToast) kvToast('Generation API keys saved!', 'success');
+}
+
+function saveSocialKey(platform) {
+  var el = document.getElementById('key-' + platform);
+  if (!el) return;
+  var val = el.value.trim();
+  setKey(platform, val);
+  if (val) el.classList.add('has-value'); else el.classList.remove('has-value');
+  updateSocialStatus(platform, val);
+  if (window.kvToast) kvToast(platform.charAt(0).toUpperCase() + platform.slice(1) + ' key saved!', 'success');
+}
+
+function savePrefs() {
+  var prefs = {
+    autosave: document.getElementById('pref-autosave').checked,
+    auto4k: document.getElementById('pref-auto4k').checked,
+    public: document.getElementById('pref-public').checked,
+    notif: document.getElementById('pref-notif').checked
+  };
+  localStorage.setItem('kv_prefs', JSON.stringify(prefs));
+  if (window.kvToast) kvToast('Preferences saved!', 'success');
+}
+
+function clearVideos() {
+  if (!confirm('Clear all videos from library?')) return;
+  localStorage.removeItem('kv_videos');
+  if (window.kvToast) kvToast('Video library cleared', 'info');
+}
+
+function clearNiches() {
+  if (!confirm('Reset all niches to defaults?')) return;
+  localStorage.removeItem('kv_niches');
+  if (window.kvToast) kvToast('Niches reset', 'info');
+}
+
+function clearAll() {
+  if (!confirm('Clear ALL platform data? This cannot be undone.')) return;
+  ['kv_niches','kv_videos','kv_prefs'].forEach(function(k) { localStorage.removeItem(k); });
+  GEN_KEYS.concat(SOCIAL_KEYS).forEach(function(k) { localStorage.removeItem('kv_' + k + '_key'); });
+  if (window.kvToast) kvToast('All data cleared', 'info');
+  setTimeout(function() { location.reload(); }, 1200);
+}
+
+init();
+</script>
+</body>
+</html>
