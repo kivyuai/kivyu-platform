@@ -6,7 +6,7 @@
 <title>Video Library - Kivyu</title>
 <link rel="stylesheet" href="static/shared.css">
 <style>
-.lib-page{min-height:100vh;padding:calc(var(--nav-h) + 36px) 40px 80px}
+.lib-page{min-height:100vh;padding:calc(var(--nav-h)+36px) 40px 80px}
 .lib-inner{max-width:1200px;margin:0 auto}
 .lib-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
 .lib-header h1{font-size:1.8rem;font-weight:600}
@@ -18,16 +18,15 @@
 .filter-input:focus{border-color:var(--blue2)}
 .filter-btn{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:8px;color:var(--blue2);padding:8px 18px;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
 .filter-btn:hover{background:rgba(99,102,241,.3)}
-.lib-stats{display:flex;gap:16px;margin-bottom:24px}
+.lib-stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
 .lib-stat{padding:10px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:.8rem}
 .lib-stat strong{font-family:var(--ff-cond);font-size:1.2rem;display:block;background:linear-gradient(135deg,var(--blue2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
 .video-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.2s;position:relative}
 .video-card:hover{border-color:rgba(99,102,241,.4);transform:translateY(-2px)}
 .video-thumb-wrap{position:relative;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2));height:158px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.video-thumb-wrap video{width:100%;height:100%;object-fit:cover;opacity:.9}
+.video-thumb-wrap video{width:100%;height:100%;object-fit:cover}
 .video-thumb-placeholder{font-size:2.5rem;opacity:.4}
-.video-duration-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;font-size:.7rem;padding:2px 7px;border-radius:4px;font-weight:600}
 .video-res-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,var(--blue2),var(--violet));color:#fff;font-size:.65rem;padding:2px 8px;border-radius:4px;font-weight:700}
 .video-card-body{padding:14px}
 .video-card-title{font-size:.9rem;font-weight:600;margin-bottom:6px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -56,8 +55,8 @@
 .delete-modal-box h3{font-size:1.1rem;font-weight:600;margin-bottom:10px}
 .delete-modal-box p{color:var(--muted2);font-size:.88rem;margin-bottom:24px}
 .modal-actions{display:flex;gap:12px;justify-content:center}
-.btn-modal-cancel{padding:10px 24px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-size:.9rem}
-.btn-modal-confirm{padding:10px 24px;border-radius:8px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;cursor:pointer;font-size:.9rem;font-weight:600}
+.btn-modal-cancel{padding:10px 24px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.btn-modal-confirm{padding:10px 24px;border-radius:8px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
@@ -66,7 +65,6 @@
 <div class="lib-page">
 <div class="aurora-blob" style="top:5%;left:5%;width:400px;height:400px;opacity:.4"></div>
 <div class="lib-inner">
-
 <div class="lib-header reveal">
 <div>
 <h1>Video Library</h1>
@@ -74,7 +72,6 @@
 </div>
 <a href="generate.html" class="btn-gen">&#43; Generate New Video</a>
 </div>
-
 <div class="filters-row reveal reveal-d1">
 <select class="filter-select" id="f-niche" onchange="applyFilters()">
 <option value="">All Niches</option>
@@ -87,13 +84,11 @@
 <option value="facebook">Facebook</option>
 <option value="twitter">Twitter</option>
 </select>
-<input class="filter-input" type="date" id="f-date" onchange="applyFilters()" placeholder="Filter by date" />
+<input class="filter-input" type="date" id="f-date" onchange="applyFilters()" />
 <input class="filter-input" type="search" id="f-search" oninput="applyFilters()" placeholder="Search..." style="flex:1;min-width:160px" />
 <button class="filter-btn" onclick="clearFilters()">Clear</button>
 </div>
-
 <div class="lib-stats reveal reveal-d2" id="lib-stats"></div>
-
 <div class="video-grid reveal reveal-d3" id="video-grid"></div>
 <div id="empty-lib" class="empty-lib" style="display:none">
 <div class="empty-icon">&#127916;</div>
@@ -101,21 +96,18 @@
 <p>Generate your first video to see it here</p>
 <a href="generate.html" class="btn-gen" style="display:inline-block;margin-top:16px">Generate Now</a>
 </div>
-
 </div>
 </div>
-
 <div class="delete-modal" id="delete-modal">
 <div class="delete-modal-box">
 <h3>Delete Video?</h3>
-<p>This will remove the video from your library. You cannot undo this action.</p>
+<p>This will remove the video from your library. This action cannot be undone.</p>
 <div class="modal-actions">
 <button class="btn-modal-cancel" onclick="closeDeleteModal()">Cancel</button>
 <button class="btn-modal-confirm" onclick="confirmDelete()">Delete</button>
 </div>
 </div>
 </div>
-
 <script src="static/nav.js"></script>
 <script>
 var allVideos = [];
@@ -123,24 +115,25 @@ var filteredVideos = [];
 var deleteTargetId = null;
 
 function getVideos() {
-  try { return JSON.parse(localStorage.getItem('kv_videos') || '[]'); } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem("kv_videos") || "[]"); } catch(e) { return []; }
 }
 function getNiches() {
-  try { return JSON.parse(localStorage.getItem('kv_niches') || '[]'); } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem("kv_niches") || "[]"); } catch(e) { return []; }
 }
-function saveVideos(v) { localStorage.setItem('kv_videos', JSON.stringify(v)); }
+function saveVideos(v) { localStorage.setItem("kv_videos", JSON.stringify(v)); }
 
 function init() {
   allVideos = getVideos();
   if (allVideos.length === 0) { seedDemoVideos(); allVideos = getVideos(); }
   var niches = getNiches();
-  var sel = document.getElementById('f-niche');
+  var sel = document.getElementById("f-niche");
   var nicheNames = {};
   niches.forEach(function(n) { nicheNames[n.name] = true; });
   allVideos.forEach(function(v) { if (v.niche) nicheNames[v.niche] = true; });
   Object.keys(nicheNames).forEach(function(name) {
-    var opt = document.createElement('option');
-    opt.value = name; opt.textContent = name;
+    var opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
     sel.appendChild(opt);
   });
   applyFilters();
@@ -148,26 +141,26 @@ function init() {
 
 function seedDemoVideos() {
   var demos = [
-    { id: 1, title: 'Epic Gaming Montage 2025', niche: 'Gaming', platforms: ['youtube','tiktok'], createdAt: '2025-12-10T10:00:00Z', resolution: '4K', prompt: 'Gaming montage' },
-    { id: 2, title: 'iPhone 17 Full Review', niche: 'Tech Reviews', platforms: ['youtube'], createdAt: '2025-12-09T14:00:00Z', resolution: '4K', prompt: 'Tech review' },
-    { id: 3, title: 'Morning Routine Vlog', niche: 'Lifestyle', platforms: ['instagram','tiktok'], createdAt: '2025-12-08T08:00:00Z', resolution: '1080p', prompt: 'Lifestyle vlog' },
-    { id: 4, title: 'AI Tools Tutorial 2025', niche: 'Education', platforms: ['youtube'], createdAt: '2025-12-07T12:00:00Z', resolution: '4K', prompt: 'Tutorial' },
-    { id: 5, title: 'Best Gaming Moments Compilation', niche: 'Gaming', platforms: ['youtube','tiktok','instagram'], createdAt: '2025-12-06T16:00:00Z', resolution: '4K', prompt: 'Compilation' },
-    { id: 6, title: 'Honest Laptop Review', niche: 'Tech Reviews', platforms: ['youtube'], createdAt: '2025-12-05T11:00:00Z', resolution: '1080p', prompt: 'Laptop review' }
+    { id: 1, title: "Epic Gaming Montage 2025", niche: "Gaming", platforms: ["youtube","tiktok"], createdAt: "2025-12-10T10:00:00Z", resolution: "4K" },
+    { id: 2, title: "iPhone 17 Full Review", niche: "Tech Reviews", platforms: ["youtube"], createdAt: "2025-12-09T14:00:00Z", resolution: "4K" },
+    { id: 3, title: "Morning Routine Vlog", niche: "Lifestyle", platforms: ["instagram","tiktok"], createdAt: "2025-12-08T08:00:00Z", resolution: "1080p" },
+    { id: 4, title: "AI Tools Tutorial 2025", niche: "Education", platforms: ["youtube"], createdAt: "2025-12-07T12:00:00Z", resolution: "4K" },
+    { id: 5, title: "Best Gaming Moments Compilation", niche: "Gaming", platforms: ["youtube","tiktok","instagram"], createdAt: "2025-12-06T16:00:00Z", resolution: "4K" },
+    { id: 6, title: "Honest Laptop Review", niche: "Tech Reviews", platforms: ["youtube"], createdAt: "2025-12-05T11:00:00Z", resolution: "1080p" }
   ];
   saveVideos(demos);
 }
 
 function applyFilters() {
-  var niche = document.getElementById('f-niche').value;
-  var platform = document.getElementById('f-platform').value;
-  var date = document.getElementById('f-date').value;
-  var search = document.getElementById('f-search').value.toLowerCase();
+  var niche = document.getElementById("f-niche").value;
+  var platform = document.getElementById("f-platform").value;
+  var date = document.getElementById("f-date").value;
+  var search = document.getElementById("f-search").value.toLowerCase();
   filteredVideos = allVideos.filter(function(v) {
     if (niche && v.niche !== niche) return false;
-    if (platform && !(v.platforms || []).includes(platform)) return false;
+    if (platform && (v.platforms || []).indexOf(platform) === -1) return false;
     if (date && v.createdAt && v.createdAt.slice(0,10) !== date) return false;
-    if (search && !(v.title || v.prompt || '').toLowerCase().includes(search)) return false;
+    if (search && (v.title || v.prompt || "").toLowerCase().indexOf(search) === -1) return false;
     return true;
   });
   renderStats();
@@ -175,86 +168,96 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  document.getElementById('f-niche').value = '';
-  document.getElementById('f-platform').value = '';
-  document.getElementById('f-date').value = '';
-  document.getElementById('f-search').value = '';
+  document.getElementById("f-niche").value = "";
+  document.getElementById("f-platform").value = "";
+  document.getElementById("f-date").value = "";
+  document.getElementById("f-search").value = "";
   applyFilters();
 }
 
 function renderStats() {
   var plats = {};
   allVideos.forEach(function(v) { (v.platforms||[]).forEach(function(p) { plats[p] = (plats[p]||0)+1; }); });
-  var html = '<div class="lib-stat"><strong>' + allVideos.length + '</strong>Total Videos</div>' +
-    '<div class="lib-stat"><strong>' + filteredVideos.length + '</strong>Showing</div>' +
-    '<div class="lib-stat"><strong>' + allVideos.filter(function(v) { return v.resolution === '4K'; }).length + '</strong>4K Videos</div>' +
-    '<div class="lib-stat"><strong>' + Object.keys(plats).length + '</strong>Platforms Used</div>';
-  document.getElementById('lib-stats').innerHTML = html;
+  var html = "<div class=\"lib-stat\"><strong>" + allVideos.length + "</strong>Total Videos</div>" +
+    "<div class=\"lib-stat\"><strong>" + filteredVideos.length + "</strong>Showing</div>" +
+    "<div class=\"lib-stat\"><strong>" + allVideos.filter(function(v) { return v.resolution === "4K"; }).length + "</strong>4K Videos</div>" +
+    "<div class=\"lib-stat\"><strong>" + Object.keys(plats).length + "</strong>Platforms</div>";
+  document.getElementById("lib-stats").innerHTML = html;
 }
 
 function renderGrid() {
-  var grid = document.getElementById('video-grid');
-  var empty = document.getElementById('empty-lib');
-  if (filteredVideos.length === 0) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-  grid.innerHTML = filteredVideos.map(function(v) { return buildCard(v); }).join('');
+  var grid = document.getElementById("video-grid");
+  var empty = document.getElementById("empty-lib");
+  if (filteredVideos.length === 0) { grid.innerHTML = ""; empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  grid.innerHTML = filteredVideos.map(function(v) { return buildCard(v); }).join("");
 }
 
 function buildCard(v) {
-  var title = v.title || v.prompt || 'Untitled Video';
-  var date = v.createdAt ? new Date(v.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '';
-  var res = v.resolution || '4K';
+  var title = v.title || v.prompt || "Untitled Video";
+  var date = "";
+  try { date = v.createdAt ? new Date(v.createdAt).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) : ""; } catch(e) {}
+  var res = v.resolution || "4K";
   var platsHTML = (v.platforms||[]).map(function(p) {
-    return '<span class="plat-badge ' + p + '">' + p.charAt(0).toUpperCase() + p.slice(1) + '</span>';
-  }).join('');
-  var thumbHTML = v.url ? '<video src="' + v.url + '" preload="metadata"></video>' : '<div class="video-thumb-placeholder">&#127916;</div>';
-  return '<div class="video-card" id="vc-' + v.id + '">' +
-    '<div class="video-thumb-wrap">' + thumbHTML + '<span class="video-res-badge">' + res + '</span></div>' +
-    '<div class="video-card-body">' +
-    '<div class="video-card-title" title="' + escHtml(title) + '">' + escHtml(title) + '</div>' +
-    '<div class="video-card-meta">' + (v.niche || 'No niche') + (date ? ' &bull; ' + date : '') + '</div>' +
-    '<div class="video-platforms">' + (platsHTML || '<span style="color:var(--muted);font-size:.75rem">Not uploaded</span>') + '</div>' +
-    '<div class="video-actions">' +
-    '<button class="va-btn dl" onclick="dlVideo('' + escAttr(v.url||'') + '','' + escAttr(title) + '')">&#11015; Download</button>' +
-    '<button class="va-btn up" onclick="location.href='generate.html'">&#128228; Re-upload</button>' +
-    '<button class="va-btn del" onclick="askDelete(' + v.id + ')">&#128465;</button>' +
-    '</div></div></div>';
+    return "<span class=\"plat-badge " + p + "\">" + p.charAt(0).toUpperCase() + p.slice(1) + "</span>";
+  }).join("");
+  var thumbHTML = v.url ? "<video src=\"" + v.url + "\" preload=\"metadata\"></video>" : "<div class=\"video-thumb-placeholder\">&#127916;</div>";
+  var safeTitle = escHtml(title);
+  var safeUrl = (v.url || "").replace(/"/g, "");
+  var safeTitleAttr = title.replace(/[^a-z0-9 ]/gi,"_");
+  return "<div class=\"video-card\" id=\"vc-" + v.id + "\">" +
+    "<div class=\"video-thumb-wrap\">" + thumbHTML + "<span class=\"video-res-badge\">" + res + "</span></div>" +
+    "<div class=\"video-card-body\">" +
+    "<div class=\"video-card-title\">" + safeTitle + "</div>" +
+    "<div class=\"video-card-meta\">" + (v.niche || "No niche") + (date ? " &bull; " + date : "") + "</div>" +
+    "<div class=\"video-platforms\">" + (platsHTML || "<span style=\"color:var(--muted);font-size:.75rem\">Not uploaded</span>") + "</div>" +
+    "<div class=\"video-actions\">" +
+    "<button class=\"va-btn dl\" data-url=\"" + safeUrl + "\" data-title=\"" + safeTitleAttr + "\" data-action=\"dl\">&#11015; Download</button>" +
+    "<button class=\"va-btn up\" data-action=\"up\">&#128228; Re-upload</button>" +
+    "<button class=\"va-btn del\" data-action=\"del\" data-id=\"" + v.id + "\">&#128465;</button>" +
+    "</div></div></div>";
 }
 
-function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s) { return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
-
-function dlVideo(url, title) {
-  if (!url) { if (window.kvToast) kvToast('No download URL for this video', 'error'); return; }
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = title.replace(/[^a-z0-9]/gi,'_') + '.mp4';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  if (window.kvToast) kvToast('Download started!', 'success');
+function escHtml(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-function askDelete(id) {
-  deleteTargetId = id;
-  document.getElementById('delete-modal').classList.add('show');
-}
+document.addEventListener("click", function(e) {
+  var t = e.target;
+  var action = t.getAttribute("data-action");
+  if (action === "dl") {
+    var url = t.getAttribute("data-url");
+    var title = t.getAttribute("data-title");
+    if (!url) { if (window.kvToast) kvToast("No download URL for this video", "error"); return; }
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = title + ".mp4";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    if (window.kvToast) kvToast("Download started!", "success");
+  }
+  if (action === "up") { location.href = "generate.html"; }
+  if (action === "del") {
+    var id = parseInt(t.getAttribute("data-id"));
+    deleteTargetId = id;
+    document.getElementById("delete-modal").classList.add("show");
+  }
+});
+
 function closeDeleteModal() {
   deleteTargetId = null;
-  document.getElementById('delete-modal').classList.remove('show');
+  document.getElementById("delete-modal").classList.remove("show");
 }
+
 function confirmDelete() {
   if (deleteTargetId === null) return;
   allVideos = allVideos.filter(function(v) { return v.id !== deleteTargetId; });
   saveVideos(allVideos);
   closeDeleteModal();
   applyFilters();
-  if (window.kvToast) kvToast('Video removed from library', 'info');
+  if (window.kvToast) kvToast("Video removed from library", "info");
 }
 
 init();
