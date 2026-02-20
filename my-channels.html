@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Channels — Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.channels-page{min-height:100vh;padding:calc(var(--nav-h) + 40px) 40px 60px}
+.channels-inner{max-width:1300px;margin:0 auto}
+.page-header{margin-bottom:36px}
+.page-header h1{font-size:1.8rem;font-weight:600;margin-bottom:8px}
+.page-header p{color:var(--muted2)}
+/* Overview stats */
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:40px}
+.ov-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;backdrop-filter:blur(8px)}
+.ov-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.ov-value{font-family:var(--ff-cond);font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--blue2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.ov-sub{font-size:.8rem;color:var(--teal)}
+/* Channel cards */
+.channels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;margin-bottom:40px}
+.ch-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;backdrop-filter:blur(8px);transition:border-color .2s}
+.ch-card:hover{border-color:var(--blue2)}
+.ch-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ch-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ch-icon.gaming{background:rgba(99,102,241,.15)}
+.ch-icon.tech{background:rgba(34,211,238,.15)}
+.ch-icon.lifestyle{background:rgba(236,72,153,.15)}
+.ch-icon.education{background:rgba(245,158,11,.15)}
+.ch-icon.entertainment{background:rgba(16,185,129,.15)}
+.ch-name{font-weight:700;font-size:1.05rem;margin-bottom:3px}
+.ch-handle{font-size:.78rem;color:var(--muted2)}
+.ch-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ch-stat{text-align:center;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:8px}
+.ch-stat-v{font-family:var(--ff-cond);font-size:1.2rem;font-weight:800;color:var(--blue2)}
+.ch-stat-l{font-size:.62rem;color:var(--muted);text-transform:uppercase}
+.ch-last{font-size:.78rem;color:var(--muted2);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.ch-last-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block}
+.ch-last-dot.overdue{background:var(--amber)}
+.ch-actions{display:flex;gap:8px}
+.ch-actions .btn-primary{flex:1;text-align:center;font-size:.82rem;padding:9px 12px}
+.ch-actions .btn-sm{font-size:.78rem}
+/* Tasks panel */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;backdrop-filter:blur(8px)}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.panel-title{font-size:1.1rem;font-weight:600}
+.task-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.task-item:last-child{border-bottom:none}
+.task-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
+.task-check.done{background:var(--teal);border-color:var(--teal);color:#000;font-size:.7rem}
+.task-check.pending{border-color:var(--amber)}
+.task-text{font-size:.85rem;flex:1}
+.task-text.done{text-decoration:line-through;color:var(--muted2)}
+.task-ch{font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
+/* Calendar */
+.cal-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.cal-item:last-child{border-bottom:none}
+.cal-date{text-align:center;min-width:40px}
+.cal-day{font-family:var(--ff-cond);font-size:1.3rem;font-weight:800;color:var(--blue2);line-height:1}
+.cal-month{font-size:.6rem;color:var(--muted);text-transform:uppercase}
+.cal-info{flex:1}
+.cal-title{font-size:.85rem;font-weight:600;margin-bottom:3px}
+.cal-meta{font-size:.72rem;color:var(--muted2)}
+.cal-badge{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:100px}
+.cal-badge.scheduled{background:rgba(34,211,238,.12);color:var(--teal)}
+.cal-badge.idea{background:rgba(99,102,241,.12);color:#818cf8}
+.cal-badge.filming{background:rgba(245,158,11,.12);color:var(--amber)}
+@media(max-width:768px){
+  .overview-grid{grid-template-columns:repeat(2,1fr)}
+  .channels-grid{grid-template-columns:1fr}
+  .bottom-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="channels-page">
+  <div class="aurora-blob" style="top:5%;right:10%;width:420px;height:420px"></div>
+  <div class="channels-inner">
+
+    <div class="page-header reveal">
+      <h1>My YouTube Channels</h1>
+      <p>Manage all 5 channels in one place</p>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="overview-grid reveal reveal-d1" id="overview-stats">
+      <div class="ov-card">
+        <div class="ov-label">Total Subscribers</div>
+        <div class="ov-value" id="total-subs">389K</div>
+        <div class="ov-sub">Across all channels</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-label">Total Views</div>
+        <div class="ov-value" id="total-views">7.7M</div>
+        <div class="ov-sub">All time</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-label">Videos This Month</div>
+        <div class="ov-value" id="vids-month">12</div>
+        <div class="ov-sub">+3 vs last month</div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-label">Hours Saved</div>
+        <div class="ov-value">38h</div>
+        <div class="ov-sub">Via AI automation</div>
+      </div>
+    </div>
+
+    <!-- Channel Cards -->
+    <div class="channels-grid reveal reveal-d2" id="channels-grid"></div>
+
+    <!-- Bottom Panels -->
+    <div class="bottom-grid">
+      <div class="panel reveal">
+        <div class="panel-header">
+          <h3 class="panel-title">&#128197; Content Calendar</h3>
+          <button class="btn-sm" onclick="addIdea()">+ Add Idea</button>
+        </div>
+        <div id="calendar-list"></div>
+      </div>
+      <div class="panel reveal reveal-d1">
+        <div class="panel-header">
+          <h3 class="panel-title">&#9989; Today's Tasks</h3>
+          <span id="task-count" style="font-size:.8rem;color:var(--muted2)"></span>
+        </div>
+        <div id="task-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="static/nav.js"></script>
+<script>
+var channels = JSON.parse(localStorage.getItem('kv_channels') || 'null') || [
+  { id: 'gaming', icon: '&#127918;', name: 'Gaming Channel', handle: '@kivyu-gaming', subs: '124K', views: '3.2M', rev: '&#163;1.2K', lastUpload: 2, color: 'gaming', uploadFreq: 3 },
+  { id: 'tech', icon: '&#128187;', name: 'Tech Reviews', handle: '@kivyu-tech', subs: '89K', views: '1.8M', rev: '&#163;980', lastUpload: 1, color: 'tech', uploadFreq: 3 },
+  { id: 'lifestyle', icon: '&#127775;', name: 'Lifestyle', handle: '@kivyu-lifestyle', subs: '56K', views: '890K', rev: '&#163;540', lastUpload: 3, color: 'lifestyle', uploadFreq: 5 },
+  { id: 'education', icon: '&#128218;', name: 'Education', handle: '@kivyu-education', subs: '42K', views: '620K', rev: '&#163;410', lastUpload: 5, color: 'education', uploadFreq: 4 },
+  { id: 'entertainment', icon: '&#127916;', name: 'Entertainment', handle: '@kivyu-entertainment', subs: '78K', views: '1.2M', rev: '&#163;720', lastUpload: 1, color: 'entertainment', uploadFreq: 2 }
+];
+
+var calendar = JSON.parse(localStorage.getItem('kv_calendar') || 'null') || [
+  { date: '21', month: 'Feb', title: 'Top 10 Gaming Moments 2025', channel: 'Gaming', status: 'scheduled' },
+  { date: '22', month: 'Feb', title: 'iPhone 17 Hands-On Review', channel: 'Tech', status: 'filming' },
+  { date: '23', month: 'Feb', title: 'Morning Routine 2025', channel: 'Lifestyle', status: 'idea' },
+  { date: '24', month: 'Feb', title: 'Python in 60 Minutes', channel: 'Education', status: 'scheduled' },
+  { date: '25', month: 'Feb', title: 'Funniest AI Fails Compilation', channel: 'Entertainment', status: 'idea' }
+];
+
+var tasks = JSON.parse(localStorage.getItem('kv_tasks') || 'null') || [
+  { text: 'Upload Gaming video (done)', channel: 'Gaming', done: true },
+  { text: 'Create Tech review script', channel: 'Tech', done: false },
+  { text: 'Reply to 500 pending comments', channel: 'All', done: false },
+  { text: 'Generate Sora prompt for Lifestyle', channel: 'Lifestyle', done: false },
+  { text: 'Review Education video thumbnail', channel: 'Education', done: false },
+  { text: 'Schedule Entertainment upload', channel: 'Entertainment', done: false }
+];
+
+function saveTasks() { localStorage.setItem('kv_tasks', JSON.stringify(tasks)); }
+function saveCalendar() { localStorage.setItem('kv_calendar', JSON.stringify(calendar)); }
+
+function renderChannels() {
+  var grid = document.getElementById('channels-grid');
+  grid.innerHTML = channels.map(function(ch) {
+    var overdue = ch.lastUpload > ch.uploadFreq;
+    var sq = "'";
+    return '<div class="ch-card">' +
+      '<div class="ch-top">' +
+        '<div class="ch-icon ' + ch.color + '">' + ch.icon + '</div>' +
+        '<div><div class="ch-name">' + ch.name + '</div><div class="ch-handle">' + ch.handle + '</div></div>' +
+      '</div>' +
+      '<div class="ch-stats">' +
+        '<div class="ch-stat"><div class="ch-stat-v">' + ch.subs + '</div><div class="ch-stat-l">Subs</div></div>' +
+        '<div class="ch-stat"><div class="ch-stat-v">' + ch.views + '</div><div class="ch-stat-l">Views</div></div>' +
+        '<div class="ch-stat"><div class="ch-stat-v">' + ch.rev + '</div><div class="ch-stat-l">Revenue</div></div>' +
+      '</div>' +
+      '<div class="ch-last">' +
+        '<span class="ch-last-dot' + (overdue ? ' overdue' : '') + '"></span>' +
+        'Last upload: ' + ch.lastUpload + ' day' + (ch.lastUpload !== 1 ? 's' : '') + ' ago' +
+        (overdue ? ' &#9888;&#65039; Needs content!' : '') +
+      '</div>' +
+      '<div class="ch-actions">' +
+        '<a href="create-video.html?channel=' + ch.id + '" class="btn-primary">&#127916; Create Video</a>' +
+        '<button class="btn-sm" onclick="editChannel(' + sq + ch.id + sq + ')">&#9999;&#65039;</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderCalendar() {
+  var list = document.getElementById('calendar-list');
+  list.innerHTML = calendar.map(function(item) {
+    return '<div class="cal-item">' +
+      '<div class="cal-date"><div class="cal-day">' + item.date + '</div><div class="cal-month">' + item.month + '</div></div>' +
+      '<div class="cal-info"><div class="cal-title">' + item.title + '</div><div class="cal-meta">' + item.channel + ' Channel</div></div>' +
+      '<span class="cal-badge ' + item.status + '">' + item.status.charAt(0).toUpperCase() + item.status.slice(1) + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function renderTasks() {
+  var list = document.getElementById('task-list');
+  var pending = tasks.filter(function(t) { return !t.done; }).length;
+  document.getElementById('task-count').textContent = pending + ' pending';
+  list.innerHTML = tasks.map(function(t, i) {
+    var sq = "'";
+    return '<div class="task-item">' +
+      '<div class="task-check ' + (t.done ? 'done' : 'pending') + '" onclick="toggleTask(' + i + ')">' +
+        (t.done ? '&#10003;' : '') +
+      '</div>' +
+      '<span class="task-text' + (t.done ? ' done' : '') + '">' + t.text + '</span>' +
+      '<span class="task-ch">' + t.channel + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleTask(i) {
+  tasks[i].done = !tasks[i].done;
+  saveTasks();
+  renderTasks();
+  if (window.kvToast) kvToast(tasks[i].done ? 'Task completed!' : 'Task reopened', 'success');
+}
+
+function addIdea() {
+  var title = prompt('Video idea title:');
+  if (!title) return;
+  var ch = prompt('Channel (Gaming / Tech / Lifestyle / Education / Entertainment):') || 'All';
+  var today = new Date();
+  calendar.push({
+    date: String(today.getDate() + calendar.length),
+    month: today.toLocaleString('default', { month: 'short' }),
+    title: title,
+    channel: ch,
+    status: 'idea'
+  });
+  saveCalendar();
+  renderCalendar();
+  if (window.kvToast) kvToast('Idea added to calendar!', 'success');
+}
+
+function editChannel(id) {
+  if (window.kvToast) kvToast('Channel settings coming soon!', 'success');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderChannels();
+  renderCalendar();
+  renderTasks();
+});
+</script>
+</body>
+</html>
