@@ -25,9 +25,9 @@
 .niche-delete:hover{background:rgba(239,68,68,.25)}
 .field-row{margin-bottom:14px}
 .field-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.field-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:.85rem;font-family:var(--ff-body);outline:none;transition:.2s;box-sizing:border-box}
-.field-input:focus{border-color:var(--blue2)}
-.field-select{width:100%;background:rgba(20,20,35,.9);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:.85rem;font-family:var(--ff-body);outline:none;cursor:pointer}
+.field-input,.field-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:.85rem;font-family:var(--ff-body);outline:none;transition:.2s;box-sizing:border-box}
+.field-select{background:rgba(20,20,35,.9);cursor:pointer}
+.field-input:focus,.field-select:focus{border-color:var(--blue2)}
 .field-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:.82rem;font-family:var(--ff-body);outline:none;resize:vertical;min-height:80px;transition:.2s;box-sizing:border-box}
 .field-textarea:focus{border-color:var(--blue2)}
 .niche-platforms{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
@@ -55,7 +55,6 @@
 <div class="niches-page">
 <div class="aurora-blob" style="top:5%;right:10%;width:500px;height:500px;opacity:.5"></div>
 <div class="niches-inner">
-
 <div class="page-header reveal">
 <div>
 <h1>Niche Manager</h1>
@@ -63,106 +62,94 @@
 </div>
 <button class="btn-add-niche" onclick="addNiche()">+ Add New Niche</button>
 </div>
-
 <div class="stats-bar reveal reveal-d1" id="stats-bar">
 <div class="stat-item"><div class="stat-num" id="stat-count">0</div><div class="stat-lbl">Niches</div></div>
 <div class="stat-item"><div class="stat-num" id="stat-platforms">0</div><div class="stat-lbl">Platforms</div></div>
 <div class="stat-item"><div class="stat-num" id="stat-videos">0</div><div class="stat-lbl">Videos Made</div></div>
 </div>
-
 <div class="niches-grid reveal reveal-d2" id="niches-grid"></div>
-
 <div id="empty-state" class="empty-state" style="display:none">
-<div class="empty-icon">📁</div>
+<div class="empty-icon">&#128193;</div>
 <h3>No niches yet</h3>
 <p>Add your first niche to start organising your content strategy</p>
 <button class="btn-add-niche" style="margin-top:20px" onclick="addNiche()">+ Create First Niche</button>
 </div>
-
 </div>
 </div>
-
 <script src="static/nav.js"></script>
 <script>
-var EMOJIS = ['🎮','💻','🍳','✈️','💰','💪','💄','📱','🎓','🎵','🌿','🧘','🏠','🐾','🎨','📸','🎬','🌍','⚽','🔬','🛒','🎯','🚀','🌟'];
-var PLATFORMS = ['YouTube','TikTok','Instagram','Facebook','Twitter','Snapchat'];
-var STYLES = ['Cinematic','Fast-paced','Tutorial','Vlog','Documentary','ASMR','Explainer','Review'];
+var EMOJIS = ["🎮","💻","🍳","✈️","💰","💪","💄","📱","🎓","🎵","🌿","🧘","🏠","🐾","🎨","📸","🎬","🌍","⚽","🔬","🛒","🎯","🚀","🌟"];
+var PLATFORMS = ["YouTube","TikTok","Instagram","Facebook","Twitter","Snapchat"];
+var STYLES = ["Cinematic","Fast-paced","Tutorial","Vlog","Documentary","ASMR","Explainer","Review"];
 
 function getNiches() {
-  try { return JSON.parse(localStorage.getItem('kv_niches') || '[]'); } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem("kv_niches") || "[]"); } catch(e) { return []; }
 }
-function saveNiches(arr) {
-  localStorage.setItem('kv_niches', JSON.stringify(arr));
-}
+function saveNiches(arr) { localStorage.setItem("kv_niches", JSON.stringify(arr)); }
 function getVideos() {
-  try { return JSON.parse(localStorage.getItem('kv_videos') || '[]'); } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem("kv_videos") || "[]"); } catch(e) { return []; }
 }
 
 function updateStats() {
   var niches = getNiches();
   var videos = getVideos();
-  document.getElementById('stat-count').textContent = niches.length;
+  document.getElementById("stat-count").textContent = niches.length;
   var pSet = {};
   niches.forEach(function(n) { (n.platforms || []).forEach(function(p) { pSet[p] = 1; }); });
-  document.getElementById('stat-platforms').textContent = Object.keys(pSet).length;
-  document.getElementById('stat-videos').textContent = videos.length;
+  document.getElementById("stat-platforms").textContent = Object.keys(pSet).length;
+  document.getElementById("stat-videos").textContent = videos.length;
 }
 
 function renderNiches() {
   var niches = getNiches();
-  var grid = document.getElementById('niches-grid');
-  var empty = document.getElementById('empty-state');
-  if (niches.length === 0) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    updateStats();
-    return;
-  }
-  empty.style.display = 'none';
-  grid.innerHTML = niches.map(function(n, i) { return buildCard(n, i); }).join('');
+  var grid = document.getElementById("niches-grid");
+  var empty = document.getElementById("empty-state");
+  if (niches.length === 0) { grid.innerHTML = ""; empty.style.display = "block"; updateStats(); return; }
+  empty.style.display = "none";
+  grid.innerHTML = niches.map(function(n, i) { return buildCard(n, i); }).join("");
   updateStats();
 }
 
 function buildCard(n, i) {
   var platformsHTML = PLATFORMS.map(function(p) {
-    var active = (n.platforms || []).indexOf(p) > -1 ? 'active' : '';
-    return '<span class="platform-tag ' + active + '" onclick="togglePlatform(' + i + ','' + p + '',this)">' + p + '</span>';
-  }).join('');
+    var active = (n.platforms || []).indexOf(p) > -1 ? "active" : "";
+    return "<span class="platform-tag " + active + "" onclick="togglePlatform(" + i + ",'" + p + "',this)">" + p + "</span>";
+  }).join("");
   var styleOpts = STYLES.map(function(s) {
-    return '<option value="' + s + '"' + (n.style === s ? ' selected' : '') + '>' + s + '</option>';
-  }).join('');
-  return '<div class="niche-card" id="nc-' + i + '">' +
-    '<button class="niche-delete" onclick="deleteNiche(' + i + ')">&#215;</button>' +
-    '<div class="niche-card-header">' +
-    '<button class="niche-emoji-btn" onclick="openEmojiPicker(' + i + ')" id="emoji-btn-' + i + '">' + (n.emoji || '🎯') + '</button>' +
-    '<input class="niche-name-input" type="text" value="' + escHtml(n.name || '') + '" placeholder="Niche name..." onchange="updateField(' + i + ','name',this.value)" />' +
-    '</div>' +
-    '<div class="field-row"><div class="field-label">Platforms</div><div class="niche-platforms">' + platformsHTML + '</div></div>' +
-    '<div class="field-row"><div class="field-label">Video Style</div>' +
-    '<select class="field-select" onchange="updateField(' + i + ','style',this.value)">' + styleOpts + '</select>' +
-    '</div>' +
-    '<div class="field-row"><div class="field-label">Default Prompt Template</div>' +
-    '<textarea class="field-textarea" placeholder="Cinematic 4K footage of {topic}..." onchange="updateField(' + i + ','prompt',this.value)">' + escHtml(n.prompt || '') + '</textarea>' +
-    '</div>' +
-    '<div class="field-row"><div class="field-label">Brand Colour</div>' +
-    '<input type="color" value="' + (n.color || '#6366f1') + '" onchange="updateField(' + i + ','color',this.value)" style="width:100%;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;padding:2px">' +
-    '</div>' +
-    '<button class="niche-save-btn" onclick="saveNiche(' + i + ')">Save Niche</button>' +
-    '<div class="niche-saved-badge" id="saved-' + i + '">Saved ✓</div>' +
-    '</div>';
+    return "<option value="" + s + """ + (n.style === s ? " selected" : "") + ">" + s + "</option>";
+  }).join("");
+  return "<div class="niche-card" id="nc-" + i + "">" +
+    "<button class="niche-delete" onclick="deleteNiche(" + i + ")">&#215;</button>" +
+    "<div class="niche-card-header">" +
+    "<button class="niche-emoji-btn" onclick="openEmojiPicker(" + i + ")" id="emoji-btn-" + i + "">" + (n.emoji || "🎯") + "</button>" +
+    "<input class="niche-name-input" type="text" value="" + escHtml(n.name || "") + "" placeholder="Niche name..." onchange="updateField(" + i + ",'name',this.value)" />" +
+    "</div>" +
+    "<div class="field-row"><div class="field-label">Platforms</div><div class="niche-platforms">" + platformsHTML + "</div></div>" +
+    "<div class="field-row"><div class="field-label">Video Style</div>" +
+    "<select class="field-select" onchange="updateField(" + i + ",'style',this.value)">" + styleOpts + "</select>" +
+    "</div>" +
+    "<div class="field-row"><div class="field-label">Default Prompt Template</div>" +
+    "<textarea class="field-textarea" placeholder="Cinematic 4K footage of {topic}..." onchange="updateField(" + i + ",'prompt',this.value)">" + escHtml(n.prompt || "") + "</textarea>" +
+    "</div>" +
+    "<div class="field-row"><div class="field-label">Brand Colour</div>" +
+    "<input type="color" value="" + (n.color || "#6366f1") + "" onchange="updateField(" + i + ",'color',this.value)" style="width:100%;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;padding:2px">" +
+    "</div>" +
+    "<button class="niche-save-btn" onclick="saveNiche(" + i + ")">Save Niche</button>" +
+    "<div class="niche-saved-badge" id="saved-" + i + "">Saved ✓</div>" +
+    "</div>";
 }
 
 function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 function addNiche() {
   var niches = getNiches();
-  niches.push({ name: '', emoji: EMOJIS[niches.length % EMOJIS.length], platforms: ['YouTube'], style: 'Cinematic', prompt: '', color: '#6366f1' });
+  niches.push({ name: "", emoji: EMOJIS[niches.length % EMOJIS.length], platforms: ["YouTube"], style: "Cinematic", prompt: "", color: "#6366f1" });
   saveNiches(niches);
   renderNiches();
-  var grid = document.getElementById('niches-grid');
-  if (grid.lastElementChild) grid.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  var grid = document.getElementById("niches-grid");
+  if (grid.lastElementChild) grid.lastElementChild.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function deleteNiche(i) {
@@ -170,7 +157,7 @@ function deleteNiche(i) {
   niches.splice(i, 1);
   saveNiches(niches);
   renderNiches();
-  if (window.kvToast) kvToast('Niche removed', 'info');
+  if (window.kvToast) kvToast("Niche removed", "info");
 }
 
 function updateField(i, field, val) {
@@ -183,57 +170,52 @@ function togglePlatform(i, platform, el) {
   if (!niches[i]) return;
   var plats = niches[i].platforms || [];
   var idx = plats.indexOf(platform);
-  if (idx > -1) { plats.splice(idx, 1); el.classList.remove('active'); }
-  else { plats.push(platform); el.classList.add('active'); }
+  if (idx > -1) { plats.splice(idx, 1); el.classList.remove("active"); }
+  else { plats.push(platform); el.classList.add("active"); }
   niches[i].platforms = plats;
   saveNiches(niches);
 }
 
 function saveNiche(i) {
-  var card = document.getElementById('nc-' + i);
+  var card = document.getElementById("nc-" + i);
   if (card) {
-    var nameEl = card.querySelector('.niche-name-input');
-    var promptEl = card.querySelector('.field-textarea');
-    if (nameEl) updateField(i, 'name', nameEl.value);
-    if (promptEl) updateField(i, 'prompt', promptEl.value);
+    var nameEl = card.querySelector(".niche-name-input");
+    var promptEl = card.querySelector(".field-textarea");
+    if (nameEl) updateField(i, "name", nameEl.value);
+    if (promptEl) updateField(i, "prompt", promptEl.value);
   }
-  var badge = document.getElementById('saved-' + i);
-  if (badge) { badge.style.display = 'block'; setTimeout(function() { badge.style.display = 'none'; }, 2000); }
-  if (window.kvToast) kvToast('Niche saved!', 'success');
+  var badge = document.getElementById("saved-" + i);
+  if (badge) { badge.style.display = "block"; setTimeout(function() { badge.style.display = "none"; }, 2000); }
+  if (window.kvToast) kvToast("Niche saved!", "success");
   updateStats();
 }
 
 function openEmojiPicker(i) {
-  document.querySelectorAll('.emoji-picker').forEach(function(p) { p.remove(); });
-  var btn = document.getElementById('emoji-btn-' + i);
+  document.querySelectorAll(".emoji-picker").forEach(function(p) { p.remove(); });
+  var btn = document.getElementById("emoji-btn-" + i);
   if (!btn) return;
-  var picker = document.createElement('div');
-  picker.className = 'emoji-picker';
+  var picker = document.createElement("div");
+  picker.className = "emoji-picker";
   EMOJIS.forEach(function(e) {
-    var opt = document.createElement('div');
-    opt.className = 'emoji-opt';
+    var opt = document.createElement("div");
+    opt.className = "emoji-opt";
     opt.textContent = e;
-    opt.onclick = function() {
-      btn.textContent = e;
-      updateField(i, 'emoji', e);
-      picker.remove();
-    };
+    opt.onclick = function() { btn.textContent = e; updateField(i, "emoji", e); picker.remove(); };
     picker.appendChild(opt);
   });
   btn.parentElement.parentElement.appendChild(picker);
-  document.addEventListener('click', function handler(ev) {
-    if (!picker.contains(ev.target) && ev.target !== btn) { picker.remove(); document.removeEventListener('click', handler); }
+  document.addEventListener("click", function handler(ev) {
+    if (!picker.contains(ev.target) && ev.target !== btn) { picker.remove(); document.removeEventListener("click", handler); }
   }, true);
 }
 
-// Load default niches if first time
 function maybeLoadDefaults() {
   var niches = getNiches();
   if (niches.length === 0) {
     var defaults = [
-      { name: 'Gaming', emoji: '🎮', platforms: ['YouTube','TikTok'], style: 'Fast-paced', prompt: 'Cinematic 4K gaming footage of {topic}, epic moments, smooth transitions, professional broadcast quality', color: '#8b5cf6' },
-      { name: 'Tech Reviews', emoji: '💻', platforms: ['YouTube'], style: 'Review', prompt: '4K tech review of {topic}, clean studio lighting, minimal aesthetic, professional presenter', color: '#3b82f6' },
-      { name: 'Lifestyle', emoji: '🌟', platforms: ['YouTube','Instagram','TikTok'], style: 'Vlog', prompt: 'Cinematic vlog of {topic}, golden hour lighting, warm tones, authentic lifestyle footage', color: '#f59e0b' }
+      { name: "Gaming", emoji: "🎮", platforms: ["YouTube","TikTok"], style: "Fast-paced", prompt: "Cinematic 4K gaming footage of {topic}, epic moments, smooth transitions", color: "#8b5cf6" },
+      { name: "Tech Reviews", emoji: "💻", platforms: ["YouTube"], style: "Review", prompt: "4K tech review of {topic}, clean studio lighting, minimal aesthetic, professional", color: "#3b82f6" },
+      { name: "Lifestyle", emoji: "🌟", platforms: ["YouTube","Instagram","TikTok"], style: "Vlog", prompt: "Cinematic vlog of {topic}, golden hour lighting, warm tones, authentic footage", color: "#f59e0b" }
     ];
     saveNiches(defaults);
   }
