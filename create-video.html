@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Video — Kivyu</title>
+<link rel="stylesheet" href="static/shared.css">
+<style>
+.creator-page{min-height:100vh;padding:calc(var(--nav-h) + 40px) 40px 60px}
+.creator-inner{max-width:900px;margin:0 auto}
+.creator-header{margin-bottom:36px}
+.creator-header h1{font-size:1.8rem;font-weight:600;margin-bottom:6px}
+.creator-header p{color:var(--muted2)}
+.channel-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,.12);color:#818cf8;border:1px solid rgba(99,102,241,.25);border-radius:100px;padding:5px 14px;font-size:.82rem;font-weight:600;margin-bottom:20px}
+/* Steps */
+.steps-nav{display:flex;gap:0;margin-bottom:36px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.step-tab{flex:1;padding:14px 12px;text-align:center;background:none;border:none;color:var(--muted2);font-size:.82rem;font-weight:600;cursor:pointer;border-right:1px solid var(--border);transition:all .2s;position:relative}
+.step-tab:last-child{border-right:none}
+.step-tab.active{background:rgba(99,102,241,.1);color:#818cf8}
+.step-tab.done{color:var(--teal)}
+.step-tab .step-num{display:block;font-family:var(--ff-cond);font-size:1.2rem;font-weight:800;margin-bottom:2px}
+.step-panel{display:none}
+.step-panel.active{display:block}
+/* Cards */
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;backdrop-filter:blur(8px)}
+.step-card h3{font-size:1.05rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+/* Prompt templates */
+.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.template-btn{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:left;cursor:pointer;transition:all .15s;color:var(--text)}
+.template-btn:hover{border-color:var(--blue2);background:rgba(99,102,241,.06)}
+.template-btn strong{display:block;font-size:.82rem;margin-bottom:3px}
+.template-btn span{font-size:.72rem;color:var(--muted2)}
+/* Form elements */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:.83rem;font-weight:600;margin-bottom:8px;color:var(--muted2)}
+.form-input,.form-textarea,.form-select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:var(--ff-body);font-size:.9rem;outline:none;transition:border-color .15s}
+.form-input:focus,.form-textarea:focus{border-color:var(--blue2)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* Sora box */
+.sora-box{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:12px;padding:20px;margin-bottom:16px}
+.sora-prompt-out{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:14px;color:var(--text);font-size:.87rem;line-height:1.6;min-height:120px;white-space:pre-wrap;font-family:var(--ff-body)}
+.sora-steps{counter-reset:sora-step;list-style:none;padding:0;margin:16px 0 0}
+.sora-steps li{counter-increment:sora-step;display:flex;align-items:baseline;gap:10px;padding:8px 0;font-size:.85rem;color:var(--muted2);border-bottom:1px solid rgba(255,255,255,.04)}
+.sora-steps li:last-child{border-bottom:none}
+.sora-steps li::before{content:counter(sora-step);background:rgba(99,102,241,.2);color:#818cf8;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
+/* Upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;transition:border-color .2s;cursor:pointer;margin-bottom:16px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue2)}
+.upload-zone-icon{font-size:2.5rem;margin-bottom:12px}
+.upload-zone-text{font-weight:600;margin-bottom:6px}
+.upload-zone-sub{font-size:.82rem;color:var(--muted2)}
+.upload-progress{display:none;margin-top:16px}
+.progress-bar-wrap{background:rgba(255,255,255,.05);border-radius:100px;height:8px;margin-bottom:8px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue2),var(--violet));border-radius:100px;transition:width .3s;width:0%}
+/* YouTube metadata */
+.meta-section{margin-bottom:20px}
+.meta-section-title{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.tag-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.tag{background:rgba(99,102,241,.12);color:#818cf8;border:1px solid rgba(99,102,241,.2);border-radius:6px;padding:3px 9px;font-size:.75rem;display:flex;align-items:center;gap:5px;cursor:pointer}
+.tag:hover{background:rgba(239,68,68,.12);color:#f87171;border-color:rgba(239,68,68,.2)}
+.thumb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.thumb-option{aspect-ratio:16/9;border-radius:8px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:rgba(255,255,255,.02);transition:all .15s}
+.thumb-option:hover,.thumb-option.selected{border-color:var(--blue2)}
+/* Checklist */
+.checklist{list-style:none;padding:0}
+.checklist li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.checklist li:last-child{border-bottom:none}
+.check-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.check-icon.ok{background:rgba(34,211,238,.15);color:var(--teal)}
+.check-icon.warn{background:rgba(245,158,11,.15);color:var(--amber)}
+.check-icon.err{background:rgba(239,68,68,.15);color:#f87171}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+@media(max-width:640px){
+  .template-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .steps-nav{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<div id="kv-nav-placeholder"></div>
+<div id="kv-toast" class="kv-toast"></div>
+<div class="creator-page">
+  <div class="aurora-blob" style="top:0%;right:10%;width:380px;height:380px;opacity:.5"></div>
+  <div class="creator-inner">
+
+    <div class="creator-header reveal">
+      <div class="channel-badge" id="channel-badge">&#127916; All Channels</div>
+      <h1>Create New Video</h1>
+      <p>4-step workflow: Concept &#8594; Sora Prompt &#8594; Upload &#8594; YouTube</p>
+    </div>
+
+    <!-- Step tabs -->
+    <div class="steps-nav reveal reveal-d1">
+      <button class="step-tab active" id="tab-1" onclick="goStep(1)">
+        <span class="step-num">1</span>Concept
+      </button>
+      <button class="step-tab" id="tab-2" onclick="goStep(2)">
+        <span class="step-num">2</span>Sora Prompt
+      </button>
+      <button class="step-tab" id="tab-3" onclick="goStep(3)">
+        <span class="step-num">3</span>Upload &amp; Enhance
+      </button>
+      <button class="step-tab" id="tab-4" onclick="goStep(4)">
+        <span class="step-num">4</span>YouTube Upload
+      </button>
+    </div>
+
+    <!-- STEP 1: Concept -->
+    <div class="step-panel active" id="panel-1">
+      <div class="step-card reveal">
+        <h3>&#127775; Video Concept</h3>
+        <div class="form-group">
+          <label class="form-label">What is this video about?</label>
+          <textarea class="form-textarea" id="video-idea" placeholder="e.g. Top 10 gaming moments from this week, iPhone 17 hands-on review, Morning routine vlog..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Channel</label>
+          <select class="form-select" id="channel-select">
+            <option value="gaming">&#127918; Gaming Channel</option>
+            <option value="tech">&#128187; Tech Reviews</option>
+            <option value="lifestyle">&#127775; Lifestyle</option>
+            <option value="education">&#128218; Education</option>
+            <option value="entertainment">&#127916; Entertainment</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Video Style</label>
+            <select class="form-select" id="video-style">
+              <option value="cinematic">Cinematic / Documentary</option>
+              <option value="animated">Animated / Cartoon</option>
+              <option value="cgi">CGI / Sci-Fi</option>
+              <option value="nature">Nature / Wildlife</option>
+              <option value="abstract">Abstract / Artistic</option>
+              <option value="tutorial">Tutorial / Screen Record</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Duration</label>
+            <select class="form-select" id="video-duration">
+              <option value="60">~1 minute (Short)</option>
+              <option value="300" selected>~5 minutes</option>
+              <option value="600">~10 minutes</option>
+              <option value="900">~15 minutes</option>
+              <option value="1800">~30 minutes</option>
+            </select>
+          </div>
+        </div>
+        <h3 style="margin-top:8px">&#128218; Quick Templates</h3>
+        <div class="template-grid">
+          <button class="template-btn" onclick="useTemplate('gaming-news')">
+            <strong>&#127918; Gaming News Roundup</strong>
+            <span>Weekly gaming news, trailers, reviews</span>
+          </button>
+          <button class="template-btn" onclick="useTemplate('tech-review')">
+            <strong>&#128187; Tech Product Review</strong>
+            <span>Unboxing, features, verdict</span>
+          </button>
+          <button class="template-btn" onclick="useTemplate('lifestyle-vlog')">
+            <strong>&#127775; Lifestyle Vlog</strong>
+            <span>Day-in-the-life, routine, travel</span>
+          </button>
+          <button class="template-btn" onclick="useTemplate('tutorial')">
+            <strong>&#128218; Educational Tutorial</strong>
+            <span>How-to, explainer, step-by-step</span>
+          </button>
+        </div>
+      </div>
+      <div class="nav-row">
+        <a href="my-channels.html" class="btn-outline">&#8592; Back to Channels</a>
+        <button class="btn-primary" onclick="goStep(2)">Generate Sora Prompt &#8594;</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Sora Prompt -->
+    <div class="step-panel" id="panel-2">
+      <div class="step-card reveal">
+        <h3>&#129302; Sora Prompt (Auto-Generated)</h3>
+        <div class="sora-box">
+          <div id="sora-prompt-output" class="sora-prompt-out">Click "Generate Sora Prompt" to create your prompt.</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <button class="btn-primary" onclick="generateSoraPrompt()">&#9889; Generate Prompt</button>
+          <button class="btn-outline" onclick="copyPrompt()">&#128203; Copy Prompt</button>
+          <button class="btn-outline" onclick="openChatGPT()">&#129302; Open ChatGPT Plus</button>
+        </div>
+        <ol class="sora-steps">
+          <li>Click <strong>Generate Prompt</strong> above to get your AI-optimised Sora prompt</li>
+          <li>Click <strong>Copy Prompt</strong> then click <strong>Open ChatGPT Plus</strong></li>
+          <li>In ChatGPT, switch to <strong>Sora</strong> and paste the prompt</li>
+          <li>Generate your video (takes 3&#8211;5 min) then download it</li>
+          <li>Return here and proceed to Step 3 to upload &amp; enhance</li>
+        </ol>
+      </div>
+      <div class="step-card reveal reveal-d1">
+        <h3>&#127775; Prompt Variations</h3>
+        <div id="prompt-variations" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-outline" onclick="goStep(1)">&#8592; Back</button>
+        <button class="btn-primary" onclick="goStep(3)">Upload Video &#8594;</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Upload & Enhance -->
+    <div class="step-panel" id="panel-3">
+      <div class="step-card reveal">
+        <h3>&#8679; Upload Sora Video</h3>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('video-file').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDrop(event)">
+          <div class="upload-zone-icon">&#127916;</div>
+          <div class="upload-zone-text" id="upload-zone-text">Drop your Sora video here</div>
+          <div class="upload-zone-sub">or click to browse &bull; MP4, MOV, WebM accepted</div>
+        </div>
+        <input type="file" id="video-file" accept="video/*" style="display:none" onchange="handleFileSelect(this)">
+        <div class="upload-progress" id="upload-progress">
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+          <p id="progress-label" style="font-size:.82rem;color:var(--muted2);text-align:center">Processing...</p>
+        </div>
+      </div>
+      <div class="step-card reveal reveal-d1" id="video-preview-card" style="display:none">
+        <h3>&#127909; Preview</h3>
+        <video id="video-preview" controls style="width:100%;border-radius:10px;background:#000;margin-bottom:16px"></video>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Original</div>
+            <div id="orig-res" style="font-family:var(--ff-cond);font-size:1.3rem;font-weight:800;color:var(--muted2)">—</div>
+          </div>
+          <div style="background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.2);border-radius:10px;padding:14px;text-align:center">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-bottom:6px">Enhanced</div>
+            <div id="enh-res" style="font-family:var(--ff-cond);font-size:1.3rem;font-weight:800;color:var(--teal)">&#10003; Ready</div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-outline" onclick="goStep(2)">&#8592; Back</button>
+        <button class="btn-primary" id="next-to-4" onclick="goStep(4)" disabled>Generate YouTube Data &#8594;</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: YouTube Upload -->
+    <div class="step-panel" id="panel-4">
+      <div class="step-card reveal">
+        <h3>&#127775; AI-Generated Title &amp; Description</h3>
+        <div class="meta-section">
+          <div class="meta-section-title">
+            Title
+            <button class="btn-sm" onclick="regenerateTitle()">&#9889; Regenerate</button>
+          </div>
+          <input type="text" class="form-input" id="yt-title" value="">
+        </div>
+        <div class="meta-section">
+          <div class="meta-section-title">
+            Description
+            <button class="btn-sm" onclick="regenerateDesc()">&#9889; Regenerate</button>
+          </div>
+          <textarea class="form-textarea" id="yt-description" style="min-height:160px"></textarea>
+        </div>
+      </div>
+      <div class="step-card reveal reveal-d1">
+        <h3>&#127991;&#65039; SEO Tags</h3>
+        <div class="tag-list" id="tag-list"></div>
+        <button class="btn-sm" style="margin-top:12px" onclick="addCustomTag()">+ Add Tag</button>
+        <p style="font-size:.75rem;color:var(--muted2);margin-top:8px">Click a tag to remove it</p>
+      </div>
+      <div class="step-card reveal reveal-d2">
+        <h3>&#128247; Thumbnail Suggestions</h3>
+        <div class="thumb-grid" id="thumb-grid"></div>
+        <p style="font-size:.75rem;color:var(--muted2);margin-top:10px">Click to select &bull; Download and upload manually to YouTube Studio</p>
+      </div>
+      <div class="step-card reveal reveal-d3">
+        <h3>&#9989; Pre-Upload Checklist</h3>
+        <ul class="checklist" id="upload-checklist"></ul>
+      </div>
+      <div class="nav-row">
+        <button class="btn-outline" onclick="goStep(3)">&#8592; Back</button>
+        <button class="btn-primary btn-large" onclick="openYouTubeStudio()" style="padding:14px 32px;font-size:.95rem">
+          &#128228; Open YouTube Studio to Upload
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="static/nav.js"></script>
+<script>
+var currentStep = 1;
+var uploadedVideoUrl = null;
+var generatedTags = [];
+
+// Read channel from URL param
+var params = new URLSearchParams(window.location.search);
+var channelId = params.get('channel') || 'gaming';
+var channelNames = { gaming: '&#127918; Gaming Channel', tech: '&#128187; Tech Reviews', lifestyle: '&#127775; Lifestyle', education: '&#128218; Education', entertainment: '&#127916; Entertainment' };
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('channel-badge').innerHTML = channelNames[channelId] || '&#127916; All Channels';
+  var sel = document.getElementById('channel-select');
+  if (sel) sel.value = channelId;
+  populateThumbs();
+});
+
+var templates = {
+  'gaming-news': { idea: 'Top 10 gaming moments and news this week - biggest releases, trailers and controversies', style: 'cinematic', duration: '600' },
+  'tech-review': { idea: 'Hands-on review: unboxing, key features, performance benchmarks and final verdict', style: 'cinematic', duration: '600' },
+  'lifestyle-vlog': { idea: 'A day in my life - morning routine, productivity tips and evening wind-down', style: 'cinematic', duration: '900' },
+  'tutorial': { idea: 'Step-by-step tutorial with clear explanations, practical examples and key takeaways', style: 'tutorial', duration: '600' }
+};
+
+function useTemplate(key) {
+  var t = templates[key];
+  if (!t) return;
+  document.getElementById('video-idea').value = t.idea;
+  document.getElementById('video-style').value = t.style;
+  document.getElementById('video-duration').value = t.duration;
+  if (window.kvToast) kvToast('Template applied!', 'success');
+}
+
+var soraPromptTemplates = {
+  cinematic: 'Cinematic 4K footage, professional broadcast quality, shallow depth of field, smooth camera movement, natural dramatic lighting, documentary style. NOT animated, NOT cartoon.',
+  animated: '2D animated cartoon style, bright primary colours, smooth fluid animation, Disney/Pixar aesthetic. NOT photorealistic, NOT live-action.',
+  cgi: 'High-quality CGI render, cinematic VFX, dramatic volumetric lighting, Unreal Engine 5 quality, photorealistic detail.',
+  nature: '4K nature documentary footage, BBC Earth style, macro lens, golden hour sunlight, slow motion, NOT CGI.',
+  abstract: 'Abstract motion graphics, fluid dynamics, mesmerising patterns, black background, slow motion 120fps, artistic experimental film.',
+  tutorial: 'Clean screen recording style, clear UI, professional presentation, light modern interface, crisp text legibility.'
+};
+
+function generateSoraPrompt() {
+  var idea = document.getElementById('video-idea').value.trim() || 'YouTube video';
+  var style = document.getElementById('video-style').value;
+  var channel = document.getElementById('channel-select').value;
+  var styleDesc = soraPromptTemplates[style] || soraPromptTemplates.cinematic;
+  var prompt = styleDesc + ' ' + idea + '. Channel theme: ' + (channelNames[channel] || channel).replace(/&#[0-9]+;/g, '').trim() + '. Professional YouTube content quality.';
+  document.getElementById('sora-prompt-output').textContent = prompt;
+  var vars = [
+    'Wide establishing shot version: ' + prompt,
+    'Close-up detail version: ' + prompt.replace('smooth camera movement', 'slow push-in close-up'),
+    'High energy version: ' + prompt.replace('smooth', 'dynamic fast-cut') + ' High energy, punchy editing.'
+  ];
+  var varDiv = document.getElementById('prompt-variations');
+  varDiv.innerHTML = vars.map(function(v, i) {
+    var sq = "'";
+    return '<div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:14px">' +
+      '<div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700">Variation ' + (i+1) + '</div>' +
+      '<div style="font-size:.82rem;color:var(--muted2);line-height:1.5;margin-bottom:10px">' + v.substring(0, 160) + '...</div>' +
+      '<button class="btn-sm" onclick="copyText(' + sq + v.replace(/'/g,'') + sq + ')">&#128203; Copy</button>' +
+    '</div>';
+  }).join('');
+  if (window.kvToast) kvToast('Sora prompt generated!', 'success');
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    if (window.kvToast) kvToast('Copied!', 'success');
+  });
+}
+function copyPrompt() {
+  var t = document.getElementById('sora-prompt-output').textContent;
+  navigator.clipboard.writeText(t).then(function() {
+    if (window.kvToast) kvToast('Prompt copied to clipboard!', 'success');
+  });
+}
+function openChatGPT() { window.open('https://chat.openai.com', '_blank'); }
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  var file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) processVideo(file);
+}
+function handleFileSelect(input) {
+  if (input.files[0]) processVideo(input.files[0]);
+}
+function processVideo(file) {
+  document.getElementById('upload-zone-text').textContent = file.name;
+  document.getElementById('upload-progress').style.display = 'block';
+  var fill = document.getElementById('progress-fill');
+  var label = document.getElementById('progress-label');
+  var stages = ['Reading video file...', 'Analysing resolution...', 'Preparing enhancement...', 'Enhancement complete!'];
+  var p = 0;
+  var si = 0;
+  var iv = setInterval(function() {
+    p = Math.min(p + 8, 100);
+    fill.style.width = p + '%';
+    label.textContent = stages[Math.floor(si / 4)] || stages[stages.length - 1];
+    si++;
+    if (p >= 100) {
+      clearInterval(iv);
+      label.textContent = '&#10003; Ready for YouTube upload';
+      uploadedVideoUrl = URL.createObjectURL(file);
+      document.getElementById('video-preview').src = uploadedVideoUrl;
+      document.getElementById('video-preview-card').style.display = 'block';
+      document.getElementById('orig-res').textContent = '1080p';
+      document.getElementById('next-to-4').disabled = false;
+      generateYouTubeData();
+      if (window.kvToast) kvToast('Video ready!', 'success');
+    }
+  }, 200);
+}
+
+var ytTitleTemplates = ['[TITLE] — You Won't Believe This!', 'I Tried [TOPIC] For 30 Days (Honest Results)', 'The TRUTH About [TOPIC] in 2025', '[TOPIC]: Everything You Need to Know', 'How I [TOPIC] (Step-by-Step Guide)'];
+function generateYouTubeData() {
+  var idea = document.getElementById('video-idea').value || 'YouTube video';
+  var words = idea.split(' ').slice(0, 5).join(' ');
+  var titleTpl = ytTitleTemplates[Math.floor(Math.random() * ytTitleTemplates.length)];
+  document.getElementById('yt-title').value = titleTpl.replace('[TITLE]', words).replace('[TOPIC]', words);
+  document.getElementById('yt-description').value = [
+    words + ' — Full Video',
+    '',
+    'In this video I cover everything you need to know about ' + idea.toLowerCase() + '.',
+    '',
+    '&#9201; TIMESTAMPS',
+    '0:00 - Introduction',
+    '1:00 - Main Content',
+    '4:00 - Key Takeaways',
+    '5:00 - Outro',
+    '',
+    '&#128276; Subscribe for more content!',
+    '&#128279; Links mentioned in video: [add your links]',
+    '',
+    '#youtube #' + channelId + ' #' + words.replace(/ /g, '')
+  ].join('
+');
+  var baseTags = [channelId, 'youtube', '2025', words, words.split(' ')[0], 'howto', 'tutorial', 'review', 'tips', 'viral'];
+  generatedTags = baseTags.filter(function(t) { return t.length > 1; });
+  renderTags();
+  populateChecklist();
+}
+function regenerateTitle() {
+  var idea = document.getElementById('video-idea').value || 'YouTube video';
+  var words = idea.split(' ').slice(0, 5).join(' ');
+  var tpl = ytTitleTemplates[Math.floor(Math.random() * ytTitleTemplates.length)];
+  document.getElementById('yt-title').value = tpl.replace('[TITLE]', words).replace('[TOPIC]', words);
+  if (window.kvToast) kvToast('Title regenerated!', 'success');
+}
+function regenerateDesc() { generateYouTubeData(); if (window.kvToast) kvToast('Description regenerated!', 'success'); }
+function renderTags() {
+  document.getElementById('tag-list').innerHTML = generatedTags.map(function(t, i) {
+    var sq = "'";
+    return '<span class="tag" onclick="removeTag(' + i + ')">' + t + ' &#215;</span>';
+  }).join('');
+}
+function removeTag(i) { generatedTags.splice(i, 1); renderTags(); }
+function addCustomTag() {
+  var t = prompt('Enter tag:');
+  if (t) { generatedTags.push(t.trim()); renderTags(); }
+}
+function populateThumbs() {
+  var styles = ['&#127775; Minimal', '&#128165; Bold Text', '&#127909; Cinematic', '&#9889; Neon', '&#128247; Photo', '&#127919; Target'];
+  document.getElementById('thumb-grid').innerHTML = styles.map(function(s, i) {
+    var sq = "'";
+    return '<div class="thumb-option" onclick="selectThumb(' + i + ')" id="thumb-' + i + '" style="background:hsl(' + (i * 60) + ',30%,12%)">' + s + '</div>';
+  }).join('');
+}
+function selectThumb(i) {
+  document.querySelectorAll('.thumb-option').forEach(function(t) { t.classList.remove('selected'); });
+  document.getElementById('thumb-' + i).classList.add('selected');
+  if (window.kvToast) kvToast('Thumbnail style selected', 'success');
+}
+function populateChecklist() {
+  var title = document.getElementById('yt-title').value;
+  var desc = document.getElementById('yt-description').value;
+  var items = [
+    { label: 'Title is under 70 characters', ok: title.length > 0 && title.length <= 70, warn: title.length > 60 },
+    { label: 'Description is over 150 characters', ok: desc.length >= 150 },
+    { label: 'Video file uploaded', ok: !!uploadedVideoUrl },
+    { label: 'At least 5 tags added', ok: generatedTags.length >= 5 },
+    { label: 'Thumbnail selected', ok: !!document.querySelector('.thumb-option.selected') },
+    { label: 'Channel selected', ok: true }
+  ];
+  document.getElementById('upload-checklist').innerHTML = items.map(function(item) {
+    var cls = item.ok ? 'ok' : (item.warn ? 'warn' : 'err');
+    var ico = item.ok ? '&#10003;' : (item.warn ? '!' : '&#215;');
+    return '<li><span class="check-icon ' + cls + '">' + ico + '</span>' + item.label + '</li>';
+  }).join('');
+}
+function openYouTubeStudio() {
+  populateChecklist();
+  window.open('https://studio.youtube.com', '_blank');
+  if (window.kvToast) kvToast('YouTube Studio opened. Upload your video there!', 'success');
+}
+
+function goStep(n) {
+  currentStep = n;
+  for (var i = 1; i <= 4; i++) {
+    document.getElementById('panel-' + i).classList.toggle('active', i === n);
+    var tab = document.getElementById('tab-' + i);
+    tab.classList.remove('active', 'done');
+    if (i === n) tab.classList.add('active');
+    else if (i < n) tab.classList.add('done');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
