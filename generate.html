@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="static/shared.css">
 <style>
 .gen-page{min-height:100vh;padding:calc(var(--nav-h) + 36px) 40px 80px}
-.gen-inner{max-width:860px;margin:0 auto}
+.gen-inner{max-width:900px;margin:0 auto}
 .gen-header{margin-bottom:32px}
 .gen-header h1{font-size:1.8rem;font-weight:600;margin-bottom:6px}
 .gen-header p{color:var(--muted2);font-size:.9rem}
@@ -39,13 +39,17 @@
 .result-wrap{display:none;margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
 .result-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
 .result-header h2{font-size:1.2rem;font-weight:600}
-.result-video{width:100%;border-radius:10px;background:#000;max-height:400px}
+.result-video{width:100%;border-radius:10px;background:#000;max-height:420px}
+.result-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.result-meta span{display:flex;align-items:center;gap:4px}
 .result-actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
 .btn-action{padding:11px 22px;border-radius:9px;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;border:none}
 .btn-primary-a{background:linear-gradient(135deg,var(--blue2),var(--violet));color:#fff}
 .btn-primary-a:hover{opacity:.85}
 .btn-outline-a{background:transparent;border:1px solid var(--border);color:var(--text)}
 .btn-outline-a:hover{border-color:var(--blue2);color:var(--blue2)}
+.btn-green-a{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-green-a:hover{opacity:.85}
 .upload-options{margin-top:24px;border-top:1px solid var(--border);padding-top:20px;display:none}
 .upload-options h3{font-size:1rem;font-weight:600;margin-bottom:14px}
 .platform-checks{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
@@ -59,341 +63,472 @@
 .upload-result-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:.85rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#10b981}
 .upload-result-item.err{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:#ef4444}
 .api-key-missing{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px 18px;font-size:.85rem;color:#ef4444;margin-top:16px;display:none}
+.history-section{margin-top:32px}
+.history-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.history-header-row h2{font-size:1.2rem;font-weight:600}
+.history-count{font-size:.85rem;color:var(--muted);background:rgba(255,255,255,.06);padding:4px 10px;border-radius:20px}
+.history-link{font-size:.85rem;color:var(--blue2);text-decoration:none;font-weight:600}
+.history-link:hover{text-decoration:underline}
+.video-hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.vid-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.2s}
+.vid-card:hover{transform:translateY(-3px);border-color:var(--blue2);box-shadow:0 8px 32px rgba(99,102,241,.12)}
+.vid-card-thumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden;cursor:pointer}
+.vid-card-thumb video{width:100%;height:100%;object-fit:cover}
+.vid-card-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);opacity:0;transition:.2s}
+.vid-card-thumb:hover .vid-card-play-overlay{opacity:1}
+.play-btn-circle{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.vid-card-info{padding:12px 14px}
+.vid-card-model{font-size:.72rem;color:var(--blue2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:600}
+.vid-card-prompt{font-size:.83rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px}
+.vid-card-meta{font-size:.75rem;color:var(--muted);display:flex;gap:10px;margin-bottom:10px}
+.vid-card-actions{display:flex;gap:6px;padding:0 14px 14px}
+.vid-card-btn{flex:1;padding:7px 4px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text);font-size:.78rem;cursor:pointer;font-weight:500;transition:.2s;text-align:center}
+.vid-card-btn:hover{border-color:var(--blue2);color:var(--blue2)}
+.vid-card-btn.del:hover{border-color:#ef4444;color:#ef4444}
+.empty-history{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-history .big-icon{font-size:3rem;margin-bottom:12px}
+.empty-history p{font-size:.9rem}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:800px;width:95%;position:relative}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1}
+.modal-video{width:100%;border-radius:8px;background:#000;max-height:500px}
+.modal-info{margin-top:14px;font-size:.85rem;color:var(--muted2)}
 </style>
 </head>
 <body>
 <div id="kv-nav-placeholder"></div>
 <div id="kv-toast" class="kv-toast"></div>
+<div class="modal-overlay" id="video-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close-btn">&#215;</button>
+    <video class="modal-video" id="modal-video" controls></video>
+    <div class="modal-info" id="modal-info"></div>
+  </div>
+</div>
 <div class="gen-page">
 <div class="aurora-blob" style="top:0;right:5%;width:500px;height:500px;opacity:.5"></div>
 <div class="gen-inner">
-
 <div class="gen-header reveal">
-<h1>Generate Ultra 4K Video</h1>
-<p>Powered by Replicate AI. Add your API key in <a href="settings.html" style="color:var(--blue2)">Settings</a> to enable real generation.</p>
+  <h1>&#128640; Generate Ultra 4K Video</h1>
+  <p>Powered by Replicate AI. Add your API key in <a href="settings.html" style="color:var(--blue2)">Settings</a> to enable real generation.</p>
 </div>
-
 <div class="api-warning reveal" id="api-warn" style="display:none">
-&#9888; No Replicate API key found. <a href="settings.html">Add it in Settings</a> to enable real video generation. Without a key, you can still test the interface.
+  &#9888; No Replicate API key found. <a href="settings.html">Add it in Settings</a> to enable real video generation. Without a key, you can still test the interface.
 </div>
-
 <div class="steps-wrap">
-
 <div class="step-card reveal reveal-d1">
-<div class="step-label"><span class="step-num">1</span> Step 1</div>
-<div class="step-title">Select Niche &amp; Context</div>
-<div class="field-row">
-<div class="field-label">Niche</div>
-<select class="field-select" id="niche-select" onchange="onNicheChange()">
-<option value="">-- Select a niche --</option>
-</select>
+  <div class="step-label"><span class="step-num">1</span> Step 1</div>
+  <div class="step-title">Select Niche &amp; Context</div>
+  <div class="field-row">
+    <div class="field-label">Niche</div>
+    <select class="field-select" id="niche-select" onchange="onNicheChange()"><option value="">-- Select a niche --</option></select>
+  </div>
+  <div class="field-row">
+    <div class="field-label">Video Concept</div>
+    <textarea class="field-textarea" id="video-prompt" placeholder="Describe your video idea..."></textarea>
+    <button class="enhance-btn" onclick="enhancePrompt()">&#10024; Enhance with AI</button>
+  </div>
 </div>
-<div class="field-row">
-<div class="field-label">Video Concept</div>
-<textarea class="field-textarea" id="video-prompt" placeholder="Describe your video idea..."></textarea>
-<button class="enhance-btn" onclick="enhancePrompt()">&#10024; Enhance with AI</button>
-</div>
-</div>
-
 <div class="step-card reveal reveal-d2">
-<div class="step-label"><span class="step-num">2</span> Step 2</div>
-<div class="step-title">Video Settings</div>
-<div class="settings-grid">
-<div class="field-row">
-<div class="field-label">Duration</div>
-<select class="field-select" id="duration">
-<option value="5">5 seconds</option>
-<option value="10" selected>10 seconds</option>
-<option value="25">25 seconds</option>
-</select>
+  <div class="step-label"><span class="step-num">2</span> Step 2</div>
+  <div class="step-title">Video Settings</div>
+  <div class="settings-grid">
+    <div class="field-row">
+      <div class="field-label">Duration</div>
+      <select class="field-select" id="duration"><option value="5">5 seconds</option><option value="10" selected>10 seconds</option><option value="25">25 seconds</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field-label">Aspect Ratio</div>
+      <select class="field-select" id="aspect-ratio"><option value="16:9">16:9 (YouTube)</option><option value="9:16">9:16 (TikTok/Reels)</option><option value="1:1">1:1 (Square)</option></select>
+    </div>
+    <div class="field-row">
+      <div class="field-label">Quality</div>
+      <select class="field-select" id="quality"><option value="4k">1080p + 4K Upscale</option><option value="1080p">1080p</option></select>
+    </div>
+  </div>
 </div>
-<div class="field-row">
-<div class="field-label">Aspect Ratio</div>
-<select class="field-select" id="aspect-ratio">
-<option value="16:9">16:9 (YouTube)</option>
-<option value="9:16">9:16 (TikTok/Reels)</option>
-<option value="1:1">1:1 (Square)</option>
-</select>
-</div>
-<div class="field-row">
-<div class="field-label">Quality</div>
-<select class="field-select" id="quality">
-<option value="4k">1080p + 4K Upscale</option>
-<option value="1080p">1080p</option>
-</select>
-</div>
-</div>
-</div>
-
 <div class="step-card reveal reveal-d3">
-<div class="step-label"><span class="step-num">3</span> Step 3</div>
-<div class="step-title">Generate</div>
-<button class="btn-generate" id="gen-btn" onclick="startGeneration()">&#128640; Generate Ultra 4K Video</button>
-<div class="api-key-missing" id="key-missing">
-&#128274; Replicate API key not configured. <a href="settings.html" style="color:inherit">Go to Settings</a> to add it.
+  <div class="step-label"><span class="step-num">3</span> Step 3</div>
+  <div class="step-title">Generate</div>
+  <button class="btn-generate" id="gen-btn" onclick="startGeneration()">&#128640; Generate Ultra 4K Video</button>
+  <div class="api-key-missing" id="key-missing">&#128274; Replicate API key not configured. <a href="settings.html" style="color:inherit">Go to Settings</a> to add it.</div>
 </div>
 </div>
-
-</div>
-
 <div class="progress-wrap" id="progress-wrap">
-<div class="progress-label" id="progress-label">Initialising generation...</div>
-<div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
-<div class="progress-status" id="progress-status">Connecting to Replicate API...</div>
+  <div class="progress-label" id="progress-label">Initialising generation...</div>
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
+  <div class="progress-status" id="progress-status">Connecting to Replicate API...</div>
 </div>
-
 <div class="result-wrap" id="result-wrap">
-<div class="result-header">
-<span style="font-size:1.4rem">&#9989;</span>
-<h2>Video Generated Successfully!</h2>
+  <div class="result-header"><span style="font-size:1.4rem">&#127909;</span><h2>Latest Generated Video</h2></div>
+  <video class="result-video" id="result-video" controls></video>
+  <div class="result-meta" id="result-meta"></div>
+  <div class="result-actions">
+    <button class="btn-action btn-primary-a" id="dl-latest-btn">&#11015;&#65039; Download</button>
+    <button class="btn-action btn-green-a" id="upload-toggle-btn">&#128228; Upload to Social</button>
+    <button class="btn-action btn-outline-a" id="gen-another-btn">&#128260; Generate Another</button>
+  </div>
+  <div class="upload-options" id="upload-options">
+    <h3>&#128228; Upload to Platforms</h3>
+    <div class="platform-checks" id="platform-checks">
+      <div class="plat-check active" data-platform="youtube">&#128250; YouTube</div>
+      <div class="plat-check active" data-platform="tiktok">&#127982; TikTok</div>
+      <div class="plat-check" data-platform="instagram">&#128247; Instagram</div>
+      <div class="plat-check" data-platform="facebook">&#128153; Facebook</div>
+      <div class="plat-check" data-platform="twitter">&#128038; Twitter/X</div>
+    </div>
+    <div class="field-label">Caption (used across all platforms)</div>
+    <textarea class="caption-area" id="upload-caption" placeholder="Check out my latest video! #viral #youtube"></textarea>
+    <button class="btn-upload-all" id="upload-all-btn">&#128228; Upload to Selected Platforms</button>
+    <div class="upload-results" id="upload-results"></div>
+  </div>
 </div>
-<video class="result-video" id="result-video" controls></video>
-<div class="result-actions">
-<button class="btn-action btn-primary-a" onclick="downloadVideo()">&#11015;&#65039; Download 4K Video</button>
-<button class="btn-action btn-primary-a" onclick="toggleUploadOptions()">&#128228; Upload to Social Media</button>
-<button class="btn-action btn-outline-a" onclick="resetForm()">&#128260; Generate Another</button>
+<div class="history-section" id="history-section" style="display:none">
+  <div class="history-header-row">
+    <h2>&#128218; Video History</h2>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span class="history-count" id="history-count">0 videos</span>
+      <a href="library.html" class="history-link">View All in Library &#8594;</a>
+    </div>
+  </div>
+  <div class="video-hist-grid" id="history-grid"></div>
+  <div style="text-align:center;margin-top:24px">
+    <a href="library.html" class="btn-action btn-outline-a" style="display:inline-block;text-decoration:none">&#128218; Open Full Library</a>
+  </div>
 </div>
-<div class="upload-options" id="upload-options">
-<h3>&#128228; Upload to Platforms</h3>
-<div class="platform-checks" id="platform-checks">
-<div class="plat-check active" data-platform="youtube" onclick="togglePlat(this)">&#128250; YouTube</div>
-<div class="plat-check active" data-platform="tiktok" onclick="togglePlat(this)">&#127982; TikTok</div>
-<div class="plat-check" data-platform="instagram" onclick="togglePlat(this)">&#128247; Instagram</div>
-<div class="plat-check" data-platform="facebook" onclick="togglePlat(this)">&#128153; Facebook</div>
-<div class="plat-check" data-platform="twitter" onclick="togglePlat(this)">&#128038; Twitter/X</div>
-</div>
-<div class="field-label">Caption (used across all platforms)</div>
-<textarea class="caption-area" id="upload-caption" placeholder="Check out my latest video! #viral #youtube"></textarea>
-<button class="btn-upload-all" onclick="uploadToAll()">&#128228; Upload to Selected Platforms</button>
-<div class="upload-results" id="upload-results"></div>
-</div>
-</div>
-
 </div>
 </div>
 <script src="static/nav.js"></script>
 <script>
-var currentVideoUrl = null;
-var currentVideoBlob = null;
+var generatedVideos = [];
+var currentVideoData = null;
+
+function loadVideos() {
+  try { generatedVideos = JSON.parse(localStorage.getItem("generatedVideos") || "[]"); } catch(e) { generatedVideos = []; }
+}
+
+function saveVideos() {
+  localStorage.setItem("generatedVideos", JSON.stringify(generatedVideos.slice(0, 100)));
+  // also sync to kv_videos for library compatibility
+  var kvVids = generatedVideos.map(function(v) {
+    return { id: v.id, url: v.url, prompt: v.prompt, niche: v.niche, createdAt: v.timestamp, platforms: v.platforms || [], model: v.model, duration: v.duration, resolution: v.resolution };
+  });
+  localStorage.setItem("kv_videos", JSON.stringify(kvVids.slice(0, 100)));
+}
 
 function getNiches() {
-  try { return JSON.parse(localStorage.getItem('kv_niches') || '[]'); } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem("kv_niches") || "[]"); } catch(e) { return []; }
 }
-function getKey(k) { return localStorage.getItem(k) || ''; }
+
+function getKey(k) { return localStorage.getItem(k) || ""; }
 
 function init() {
-  var key = getKey('kv_replicate_key');
-  if (!key) { document.getElementById('api-warn').style.display = 'flex'; }
+  loadVideos();
+  var key = getKey("kv_replicate_key");
+  if (!key) document.getElementById("api-warn").style.display = "flex";
   var niches = getNiches();
-  var sel = document.getElementById('niche-select');
+  var sel = document.getElementById("niche-select");
   niches.forEach(function(n, i) {
-    var opt = document.createElement('option');
+    var opt = document.createElement("option");
     opt.value = i;
-    opt.textContent = (n.emoji || '') + ' ' + (n.name || 'Niche ' + (i+1));
+    opt.textContent = (n.emoji || "") + " " + (n.name || "Niche " + (i+1));
     sel.appendChild(opt);
   });
   var params = new URLSearchParams(window.location.search);
-  if (params.get('niche')) {
-    sel.value = params.get('niche');
-    onNicheChange();
+  if (params.get("niche")) { sel.value = params.get("niche"); onNicheChange(); }
+  if (generatedVideos.length > 0) {
+    showLatestVideo(generatedVideos[0]);
+    updateHistoryGrid();
   }
+  bindEvents();
 }
 
+function bindEvents() {
+  document.getElementById("dl-latest-btn").addEventListener("click", function() { downloadVideo(null); });
+  document.getElementById("upload-toggle-btn").addEventListener("click", toggleUploadOptions);
+  document.getElementById("gen-another-btn").addEventListener("click", generateAnother);
+  document.getElementById("upload-all-btn").addEventListener("click", uploadToAll);
+  document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+  document.getElementById("video-modal").addEventListener("click", function(e) { if (e.target === this) closeModal(); });
+  document.getElementById("platform-checks").addEventListener("click", function(e) {
+    var el = e.target.closest(".plat-check");
+    if (el) el.classList.toggle("active");
+  });
+  document.getElementById("history-grid").addEventListener("click", function(e) {
+    var btn = e.target.closest("[data-haction]");
+    if (!btn) return;
+    var action = btn.getAttribute("data-haction");
+    var vid = btn.getAttribute("data-vid");
+    if (action === "dl") downloadVideo(vid);
+    else if (action === "play") playInModal(vid);
+    else if (action === "regen") regenVideo(vid);
+    else if (action === "upload") quickUpload(vid);
+    else if (action === "del") deleteVideo(vid);
+  });
+  document.getElementById("history-grid").addEventListener("click", function(e) {
+    var thumb = e.target.closest(".vid-card-thumb");
+    if (thumb && !e.target.closest("[data-haction]")) {
+      var vid = thumb.getAttribute("data-vid");
+      if (vid) playInModal(vid);
+    }
+  });
+}
 function onNicheChange() {
   var niches = getNiches();
-  var idx = parseInt(document.getElementById('niche-select').value);
-  if (!isNaN(idx) && niches[idx] && niches[idx].prompt) {
-    document.getElementById('video-prompt').value = niches[idx].prompt;
-  }
+  var idx = parseInt(document.getElementById("niche-select").value);
+  if (!isNaN(idx) && niches[idx] && niches[idx].prompt) document.getElementById("video-prompt").value = niches[idx].prompt;
 }
 
 function enhancePrompt() {
-  var ta = document.getElementById('video-prompt');
-  var base = ta.value || 'cinematic video';
-  ta.value = base + ', ultra high definition 4K, cinematic lighting, professional broadcast quality, smooth camera movement, NOT animated, NOT cartoon, photorealistic';
-  if (window.kvToast) kvToast('Prompt enhanced for 4K quality!', 'success');
+  var ta = document.getElementById("video-prompt");
+  var base = ta.value || "cinematic video";
+  ta.value = base + ", ultra high definition 4K, cinematic lighting, professional broadcast quality, smooth camera movement, photorealistic";
+  if (window.kvToast) kvToast("Prompt enhanced for 4K quality!", "success");
 }
 
 function setProgress(pct, label, status) {
-  document.getElementById('progress-bar').style.width = pct + '%';
-  if (label) document.getElementById('progress-label').textContent = label;
-  if (status) document.getElementById('progress-status').textContent = status;
+  document.getElementById("progress-bar").style.width = pct + "%";
+  if (label) document.getElementById("progress-label").textContent = label;
+  if (status) document.getElementById("progress-status").textContent = status;
 }
 
 function startGeneration() {
-  var prompt = document.getElementById('video-prompt').value.trim();
-  if (!prompt) { if (window.kvToast) kvToast('Please enter a video concept', 'error'); return; }
-  var key = getKey('kv_replicate_key');
-  if (!key) {
-    document.getElementById('key-missing').style.display = 'block';
-    if (window.kvToast) kvToast('Add your Replicate API key in Settings first', 'error');
-    return;
-  }
-  document.getElementById('key-missing').style.display = 'none';
-  document.getElementById('gen-btn').disabled = true;
-  document.getElementById('progress-wrap').style.display = 'block';
-  document.getElementById('result-wrap').style.display = 'none';
-  setProgress(5, 'Connecting to Replicate AI...', 'Sending request...');
+  var prompt = document.getElementById("video-prompt").value.trim();
+  if (!prompt) { if (window.kvToast) kvToast("Please enter a video concept", "error"); return; }
+  var key = getKey("kv_replicate_key");
+  if (!key) { document.getElementById("key-missing").style.display = "block"; if (window.kvToast) kvToast("Add your Replicate API key in Settings first", "error"); return; }
+  document.getElementById("key-missing").style.display = "none";
+  document.getElementById("gen-btn").disabled = true;
+  document.getElementById("progress-wrap").style.display = "block";
+  setProgress(5, "Connecting to Replicate AI...", "Sending request...");
   var niches = getNiches();
-  var nicheIdx = document.getElementById('niche-select').value;
+  var nicheIdx = document.getElementById("niche-select").value;
   var niche = niches[nicheIdx] || {};
-  var duration = parseInt(document.getElementById('duration').value);
-  var aspectRatio = document.getElementById('aspect-ratio').value;
-  var quality = document.getElementById('quality').value;
-  fetch('/api/generate-video', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: prompt, duration: duration, aspectRatio: aspectRatio, quality: quality, niche: niche.name || '', replicateKey: key })
+  var duration = parseInt(document.getElementById("duration").value);
+  var aspectRatio = document.getElementById("aspect-ratio").value;
+  var quality = document.getElementById("quality").value;
+  var modelName = quality === "4k" ? "minimax/video-01 + Real-ESRGAN 4K" : "minimax/video-01";
+  fetch("/api/generate-video", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: prompt, duration: duration, aspectRatio: aspectRatio, quality: quality, niche: niche.name || "", replicateKey: key })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    if (data.predictionId) {
-      pollPrediction(data.predictionId, key, quality);
-    } else if (data.videoUrl) {
-      onVideoReady(data.videoUrl, prompt, niche.name || '');
-    } else {
-      throw new Error(data.error || 'Generation failed');
-    }
+    if (data.predictionId) pollPrediction(data.predictionId, key, quality, prompt, niche.name || "", modelName, duration, aspectRatio);
+    else if (data.videoUrl) onVideoReady(data.videoUrl, prompt, niche.name || "", modelName, duration, aspectRatio);
+    else throw new Error(data.error || "Generation failed");
   })
   .catch(function(err) {
-    document.getElementById('progress-wrap').style.display = 'none';
-    document.getElementById('gen-btn').disabled = false;
-    if (window.kvToast) kvToast('Error: ' + err.message, 'error');
+    document.getElementById("progress-wrap").style.display = "none";
+    document.getElementById("gen-btn").disabled = false;
+    if (window.kvToast) kvToast("Error: " + err.message, "error");
   });
 }
 
-function pollPrediction(id, key, quality) {
-  var attempts = 0;
-  var maxAttempts = 120;
+function pollPrediction(id, key, quality, prompt, nicheName, modelName, duration, aspectRatio) {
+  var attempts = 0; var maxAttempts = 120;
   var interval = setInterval(function() {
     attempts++;
     var pct = Math.min(90, 5 + (attempts / maxAttempts) * 85);
-    var stages = ['Generating frames...', 'Rendering video...', 'Applying cinematic effects...', 'Finalising output...'];
-    setProgress(pct, 'Generating video (' + Math.round(pct) + '%)...', stages[Math.floor(attempts / 30) % stages.length]);
-    fetch('/api/generate-video?predictionId=' + id + '&key=' + encodeURIComponent(key))
+    var stages = ["Generating frames...", "Rendering video...", "Applying cinematic effects...", "Finalising output..."];
+    setProgress(pct, "Generating video (" + Math.round(pct) + "%)...", stages[Math.floor(attempts / 30) % stages.length]);
+    fetch("/api/generate-video?predictionId=" + id + "&key=" + encodeURIComponent(key))
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.status === 'succeeded' && data.videoUrl) {
+      if (data.status === "succeeded" && data.videoUrl) {
         clearInterval(interval);
-        if (quality === '4k') {
-          setProgress(92, 'Upscaling to 4K...', 'Running Real-ESRGAN...');
-          upscaleTo4K(data.videoUrl, id, key);
-        } else {
-          onVideoReady(data.videoUrl, '', '');
-        }
-      } else if (data.status === 'failed') {
-        clearInterval(interval);
-        resetGen('Generation failed: ' + (data.error || 'unknown error'));
-      }
+        if (quality === "4k") { setProgress(92, "Upscaling to 4K...", "Running Real-ESRGAN..."); upscaleTo4K(data.videoUrl, key, prompt, nicheName, modelName, duration, aspectRatio); }
+        else onVideoReady(data.videoUrl, prompt, nicheName, modelName, duration, aspectRatio);
+      } else if (data.status === "failed") { clearInterval(interval); resetGen("Generation failed: " + (data.error || "unknown")); }
     })
     .catch(function() {});
-    if (attempts >= maxAttempts) {
-      clearInterval(interval);
-      resetGen('Timed out waiting for video. Check your Replicate dashboard.');
-    }
+    if (attempts >= maxAttempts) { clearInterval(interval); resetGen("Timed out waiting for video."); }
   }, 3000);
 }
 
-function upscaleTo4K(videoUrl, id, key) {
-  fetch('/api/upscale-4k', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ videoUrl: videoUrl, replicateKey: key })
-  })
+function upscaleTo4K(videoUrl, key, prompt, nicheName, modelName, duration, aspectRatio) {
+  fetch("/api/upscale-4k", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ videoUrl: videoUrl, replicateKey: key }) })
   .then(function(r) { return r.json(); })
-  .then(function(data) {
-    setProgress(100, 'Complete!', '4K upscaling done');
-    onVideoReady(data.videoUrl || videoUrl, '', '');
-  })
-  .catch(function() {
-    setProgress(100, 'Complete!', 'Using original resolution');
-    onVideoReady(videoUrl, '', '');
-  });
+  .then(function(data) { setProgress(100, "Complete!", "4K upscaling done"); onVideoReady(data.videoUrl || videoUrl, prompt, nicheName, modelName + " + 4K", duration, aspectRatio); })
+  .catch(function() { setProgress(100, "Complete!", "Using original resolution"); onVideoReady(videoUrl, prompt, nicheName, modelName, duration, aspectRatio); });
 }
-
-function onVideoReady(url, prompt, niche) {
-  currentVideoUrl = url;
-  setProgress(100, 'Video ready!', 'Done');
+function onVideoReady(url, prompt, nicheName, modelName, duration, aspectRatio) {
+  var resolution = aspectRatio || "16:9";
+  setProgress(100, "Video ready!", "Done");
+  var videoData = {
+    id: String(Date.now()),
+    url: url,
+    prompt: prompt || "",
+    niche: nicheName || "",
+    model: modelName || "minimax/video-01",
+    duration: duration || 10,
+    resolution: resolution,
+    timestamp: new Date().toISOString(),
+    platforms: []
+  };
+  currentVideoData = videoData;
+  generatedVideos.unshift(videoData);
+  saveVideos();
   setTimeout(function() {
-    document.getElementById('progress-wrap').style.display = 'none';
-    document.getElementById('result-wrap').style.display = 'block';
-    document.getElementById('gen-btn').disabled = false;
-    var vid = document.getElementById('result-video');
-    vid.src = url;
-    var videos = [];
-    try { videos = JSON.parse(localStorage.getItem('kv_videos') || '[]'); } catch(e) { videos = []; }
-    videos.unshift({ id: Date.now(), url: url, prompt: prompt, niche: niche, createdAt: new Date().toISOString(), platforms: [] });
-    localStorage.setItem('kv_videos', JSON.stringify(videos.slice(0, 100)));
-    if (window.kvToast) kvToast('Video generated successfully!', 'success');
+    document.getElementById("progress-wrap").style.display = "none";
+    document.getElementById("gen-btn").disabled = false;
+    document.getElementById("gen-btn").textContent = "\u21BA Generate Another Video";
+    showLatestVideo(videoData);
+    updateHistoryGrid();
+    if (window.kvToast) kvToast("Video generated successfully!", "success");
   }, 800);
 }
 
-function resetGen(errMsg) {
-  document.getElementById('gen-btn').disabled = false;
-  document.getElementById('progress-wrap').style.display = 'none';
-  if (window.kvToast) kvToast(errMsg, 'error');
+function showLatestVideo(videoData) {
+  var wrap = document.getElementById("result-wrap");
+  wrap.style.display = "block";
+  var vid = document.getElementById("result-video");
+  vid.src = videoData.url;
+  currentVideoData = videoData;
+  var metaEl = document.getElementById("result-meta");
+  metaEl.innerHTML = "<span>&#128218; " + escH(videoData.model || "") + "</span><span>&#9201; " + (videoData.duration || 10) + "s</span><span>&#128205; " + escH(videoData.resolution || "16:9") + "</span><span>&#128337; " + formatTime(videoData.timestamp) + "</span>";
 }
 
-function downloadVideo() {
-  if (!currentVideoUrl) return;
-  var a = document.createElement('a');
-  a.href = currentVideoUrl;
-  a.download = 'kivyu-video-4k-' + Date.now() + '.mp4';
-  a.target = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  if (window.kvToast) kvToast('Download started!', 'success');
+function updateHistoryGrid() {
+  var section = document.getElementById("history-section");
+  var grid = document.getElementById("history-grid");
+  var countEl = document.getElementById("history-count");
+  section.style.display = "block";
+  countEl.textContent = generatedVideos.length + " video" + (generatedVideos.length !== 1 ? "s" : "");
+  var recent = generatedVideos.slice(0, 10);
+  if (recent.length === 0) {
+    grid.innerHTML = "<div class=\"empty-history\"><div class=\"big-icon\">&#127909;</div><p>No videos yet. Generate your first one above!</p></div>";
+    return;
+  }
+  var html = "";
+  recent.forEach(function(v) {
+    html += "<div class=\"vid-card\">";
+    html += "<div class=\"vid-card-thumb\" data-vid=\"" + escH(v.id) + "\">";
+    html += "<video src=\"" + escH(v.url) + "\" muted preload=\"metadata\"></video>";
+    html += "<div class=\"vid-card-play-overlay\"><div class=\"play-btn-circle\">&#9654;</div></div>";
+    html += "</div>";
+    html += "<div class=\"vid-card-info\">";
+    html += "<div class=\"vid-card-model\">" + escH(v.model || "AI Video") + "</div>";
+    html += "<div class=\"vid-card-prompt\">" + escH(v.prompt || "No prompt") + "</div>";
+    html += "<div class=\"vid-card-meta\"><span>" + (v.duration || 10) + "s</span><span>" + escH(v.resolution || "16:9") + "</span><span>" + formatTime(v.timestamp) + "</span></div>";
+    html += "</div>";
+    html += "<div class=\"vid-card-actions\">";
+    html += "<button class=\"vid-card-btn\" data-haction=\"play\" data-vid=\"" + escH(v.id) + "\">&#9654; Play</button>";
+    html += "<button class=\"vid-card-btn\" data-haction=\"dl\" data-vid=\"" + escH(v.id) + "\">&#11015; DL</button>";
+    html += "<button class=\"vid-card-btn\" data-haction=\"regen\" data-vid=\"" + escH(v.id) + "\">&#128260; Re-gen</button>";
+    html += "<button class=\"vid-card-btn del\" data-haction=\"del\" data-vid=\"" + escH(v.id) + "\">&#128465;</button>";
+    html += "</div></div>";
+  });
+  grid.innerHTML = html;
+}
+function downloadVideo(vid) {
+  var url = null;
+  if (!vid) { url = currentVideoData ? currentVideoData.url : null; }
+  else { var vd = generatedVideos.find(function(v) { return v.id === vid; }); url = vd ? vd.url : null; }
+  if (!url) { if (window.kvToast) kvToast("No video to download", "error"); return; }
+  var a = document.createElement("a"); a.href = url; a.download = "kivyu-video-" + Date.now() + ".mp4"; a.target = "_blank";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  if (window.kvToast) kvToast("Download started!", "success");
+}
+
+function playInModal(vid) {
+  var vd = generatedVideos.find(function(v) { return v.id === vid; });
+  if (!vd) return;
+  var mv = document.getElementById("modal-video"); mv.src = vd.url; mv.play();
+  document.getElementById("modal-info").textContent = vd.prompt || "";
+  document.getElementById("video-modal").classList.add("open");
+}
+
+function closeModal() {
+  var mv = document.getElementById("modal-video"); mv.pause(); mv.src = "";
+  document.getElementById("video-modal").classList.remove("open");
+}
+
+function regenVideo(vid) {
+  var vd = generatedVideos.find(function(v) { return v.id === vid; });
+  if (!vd) return;
+  document.getElementById("video-prompt").value = vd.prompt || "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (window.kvToast) kvToast("Prompt loaded - click Generate!", "success");
+}
+
+function quickUpload(vid) {
+  var vd = generatedVideos.find(function(v) { return v.id === vid; });
+  if (!vd) return;
+  currentVideoData = vd;
+  document.getElementById("result-wrap").style.display = "block";
+  showLatestVideo(vd);
+  document.getElementById("upload-options").style.display = "block";
+  window.scrollTo({ top: document.getElementById("result-wrap").offsetTop - 100, behavior: "smooth" });
+}
+
+function deleteVideo(vid) {
+  var msg = "Delete this video?";
+  if (!window.confirm(msg)) return;
+  generatedVideos = generatedVideos.filter(function(v) { return v.id !== vid; });
+  saveVideos();
+  updateHistoryGrid();
+  if (window.kvToast) kvToast("Video deleted", "success");
+}
+
+function generateAnother() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  document.getElementById("video-prompt").focus();
 }
 
 function toggleUploadOptions() {
-  var el = document.getElementById('upload-options');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  var el = document.getElementById("upload-options");
+  el.style.display = el.style.display === "none" ? "block" : "none";
 }
-
-function togglePlat(el) {
-  el.classList.toggle('active');
-}
-
 function uploadToAll() {
   var platforms = [];
-  document.querySelectorAll('.plat-check.active').forEach(function(el) { platforms.push(el.getAttribute('data-platform')); });
-  if (platforms.length === 0) { if (window.kvToast) kvToast('Select at least one platform', 'error'); return; }
-  if (!currentVideoUrl) { if (window.kvToast) kvToast('No video to upload', 'error'); return; }
-  var caption = document.getElementById('upload-caption').value;
+  document.querySelectorAll(".plat-check.active").forEach(function(el) { platforms.push(el.getAttribute("data-platform")); });
+  if (platforms.length === 0) { if (window.kvToast) kvToast("Select at least one platform", "error"); return; }
+  if (!currentVideoData) { if (window.kvToast) kvToast("No video to upload", "error"); return; }
+  var caption = document.getElementById("upload-caption").value;
   var keys = {};
-  ['youtube','tiktok','instagram','facebook','twitter'].forEach(function(p) {
-    keys[p] = localStorage.getItem('kv_' + p + '_key') || '';
-  });
-  document.getElementById('upload-results').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:8px">Uploading to ' + platforms.length + ' platform(s)...</div>';
-  fetch('/api/upload-social', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ videoUrl: currentVideoUrl, caption: caption, platforms: platforms, keys: keys })
+  ["youtube","tiktok","instagram","facebook","twitter"].forEach(function(p) { keys[p] = localStorage.getItem("kv_" + p + "_key") || ""; });
+  document.getElementById("upload-results").innerHTML = "<div style=color:var(--muted)>Uploading to " + platforms.length + " platform(s)...</div>";
+  fetch("/api/upload-social", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ videoUrl: currentVideoData.url, caption: caption, platforms: platforms, keys: keys })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    var html = '';
+    var html = "";
     (data.results || []).forEach(function(r) {
-      var cls = r.success ? '' : 'err';
-      var icon = r.success ? '&#9989;' : '&#10060;';
-      var link = r.url ? ' <a href="' + r.url + '" target="_blank" style="color:inherit;text-decoration:underline">View</a>' : '';
-      html += '<div class="upload-result-item ' + cls + '">' + icon + ' ' + r.platform + (r.success ? ' uploaded successfully' + link : ': ' + (r.error || 'failed')) + '</div>';
+      var cls = r.success ? "" : "err";
+      var icon = r.success ? "&#9989;" : "&#10060;";
+      var lnk = r.url ? " <a href=" + r.url + " target=_blank style=color:inherit>View</a>" : "";
+      html += "<div class='upload-result-item " + cls + "'>" + icon + " " + r.platform + (r.success ? " uploaded" + lnk : ": " + (r.error || "failed")) + "</div>";
     });
-    document.getElementById('upload-results').innerHTML = html || '<div class="upload-result-item">Upload complete</div>';
-    if (window.kvToast) kvToast('Uploaded to ' + platforms.length + ' platform(s)!', 'success');
+    document.getElementById("upload-results").innerHTML = html || "<div class=upload-result-item>Upload complete</div>";
+    if (window.kvToast) kvToast("Uploaded to " + platforms.length + " platform(s)!", "success");
   })
-  .catch(function(err) {
-    document.getElementById('upload-results').innerHTML = '<div class="upload-result-item err">&#10060; Upload error: ' + err.message + '</div>';
-  });
+  .catch(function(err) { document.getElementById("upload-results").innerHTML = "<div class=upload-result-item>Error: " + err.message + "</div>"; });
 }
 
-function resetForm() {
-  currentVideoUrl = null;
-  document.getElementById('result-wrap').style.display = 'none';
-  document.getElementById('progress-wrap').style.display = 'none';
-  document.getElementById('video-prompt').value = '';
-  window.scrollTo(0,0);
+function resetGen(errMsg) {
+  document.getElementById("gen-btn").disabled = false;
+  document.getElementById("progress-wrap").style.display = "none";
+  if (window.kvToast) kvToast(errMsg, "error");
+}
+
+function escH(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function formatTime(ts) {
+  if (!ts) return "";
+  try {
+    var d = new Date(ts); var now = new Date(); var diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return "just now";
+    if (diff < 3600) return Math.floor(diff/60) + "m ago";
+    if (diff < 86400) return Math.floor(diff/3600) + "h ago";
+    return d.toLocaleDateString();
+  } catch(e) { return ""; }
 }
 
 init();
