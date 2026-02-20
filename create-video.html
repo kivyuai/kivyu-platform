@@ -402,7 +402,13 @@ function processVideo(file) {
   }, 200);
 }
 
-var ytTitleTemplates = ['[TITLE] — You Won't Believe This!', 'I Tried [TOPIC] For 30 Days (Honest Results)', 'The TRUTH About [TOPIC] in 2025', '[TOPIC]: Everything You Need to Know', 'How I [TOPIC] (Step-by-Step Guide)'];
+var ytTitleTemplates = [
+  "[TITLE] - You Will Not Believe This!",
+  "I Tried [TOPIC] For 30 Days (Honest Results)",
+  "The TRUTH About [TOPIC] in 2025",
+  "[TOPIC]: Everything You Need to Know",
+  "How I [TOPIC] (Step-by-Step Guide)"
+];
 function generateYouTubeData() {
   var idea = document.getElementById('video-idea').value || 'YouTube video';
   var words = idea.split(' ').slice(0, 5).join(' ');
